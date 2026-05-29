@@ -4,6 +4,10 @@ One-time steps to get **My Little Plant** from "code on disk" to "live on the
 Chrome Web Store". Do this once. Every release *after* the first uses
 `RELEASE.md` instead.
 
+> ✅ **Done — v1.0.0 is live:**
+> <https://chromewebstore.google.com/detail/my-little-plant/nmfppnlojcllbcokdpbcfaofhdbckoaa>
+> The remaining open item is the matching GitHub Release (step H).
+
 Work top to bottom — later steps depend on earlier ones (e.g. the GitHub repo
 must exist before GitHub Pages, the privacy policy must be hosted before you can
 paste its URL into the store form).
@@ -113,9 +117,9 @@ and warns about dev-only folders that must not ship.
 
 ## H. After it goes live
 
-- [ ] Copy the live listing URL and add it to:
-  - [ ] `README.md` (the "From the Chrome Web Store" line)
-  - [ ] `docs/index.html` (uncomment the store badge, fill the URL)
+- [x] Copy the live listing URL and add it to:
+  - [x] `README.md` (badge + the "From the Chrome Web Store" line)
+  - [x] `docs/index.html` (store badge in the header, URL filled in)
 - [ ] Create the matching **GitHub Release** (`RELEASE.md` step 11) with the ZIP
       attached
 - [ ] Install the live version and play one full loop to confirm

@@ -4,6 +4,8 @@ A cozy, low-pressure little game that lives in your browser toolbar. Click the
 icon and a real plant is growing in the popup — pick a seed, choose a pot, and
 look after it a little each day over about a month.
 
+[<img src="https://raw.githubusercontent.com/1gory/my-little-plant/main/docs/chrome-webstore-badge.png" alt="Available in the Chrome Web Store" height="58">](https://chromewebstore.google.com/detail/my-little-plant/nmfppnlojcllbcokdpbcfaofhdbckoaa)
+
 **[Website](https://1gory.github.io/my-little-plant/)** &nbsp;·&nbsp; **[Privacy Policy](https://1gory.github.io/my-little-plant/privacy-policy.html)**
 
 ## What it does
@@ -41,7 +43,9 @@ browser locale — a clean future enhancement, not a launch blocker.
 ## Installation
 
 ### From the Chrome Web Store
-*(Link will be added here once the listing is live.)*
+1. Open the [Chrome Web Store listing](https://chromewebstore.google.com/detail/my-little-plant/nmfppnlojcllbcokdpbcfaofhdbckoaa)
+2. Click **Add to Chrome**
+3. Pin the icon (puzzle icon → pin) and click it to start playing
 
 ### Manual installation
 1. Go to the [Releases page](https://github.com/1gory/my-little-plant/releases)

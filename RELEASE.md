@@ -111,8 +111,9 @@ The landing page is served from `docs/` on `main` (Settings → Pages → `main`
 - [ ] Update `docs/icon128.png` if the icon changed (`cp icons/icon128.png docs/`).
 - [ ] If the privacy text changed, mirror it in `docs/privacy-policy.html` and
       `PRIVACY_POLICY.md`.
-- [ ] Once the CWS listing is live, uncomment the store badge in
-      `docs/index.html` and fill the real listing URL (here and in `README.md`).
+- [x] Store badge + live listing URL are in place in `docs/index.html` and
+      `README.md` (listing ID `nmfppnlojcllbcokdpbcfaofhdbckoaa`). For future
+      releases just confirm the link still resolves.
 - [ ] After push, open `https://1gory.github.io/my-little-plant/` and confirm.
 
 ### 8. Commit + tag
