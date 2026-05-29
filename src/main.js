@@ -72,6 +72,7 @@ root.addEventListener('click', async (e) => {
         // Watering adds a small portion of moisture (not filling to the brim) -
         // so moisture is dosed more precisely, a full pot takes several taps.
         state.water = Math.min(100, state.water + WATER_PER_POUR);
+        state.timesWatered = (state.timesWatered || 0) + 1;
         const marker = document.getElementById('moisture-marker');
         if (marker) {
           // Next frame - move the marker to the new level, CSS transition animates it.
@@ -90,6 +91,7 @@ root.addEventListener('click', async (e) => {
         if (s.phase === 'growing' && s.driedLeaves > 0) {
           s.driedLeaves = 0; s._driedProgress = 0;
           s.health = Math.min(100, s.health + 5);
+          s.timesTrimmed = (s.timesTrimmed || 0) + 1;
         }
       });
       break;
@@ -99,6 +101,7 @@ root.addEventListener('click', async (e) => {
         if (s.phase === 'growing' && isRootBound(s) && s.potTier < POT_TIERS.length - 1) {
           s.potTier += 1;
           s.health = Math.min(100, s.health + 4);
+          s.timesRepotted = (s.timesRepotted || 0) + 1;
         }
       });
       break;

@@ -67,7 +67,10 @@ function stepHour(state, seed, pot, hourIndex, baseGrowthPerHour, frozen) {
   tempFactor *= w.growthMult;
 
   // --- Growth (always active) ---
-  const cap = potCapacity(state.potTier);
+  // Normally growth stalls at the current pot's capacity until you repot.
+  // When frozen (dev time-warp), ignore that cap so days can be skipped
+  // straight to the finale without repotting.
+  const cap = frozen ? 100 : potCapacity(state.potTier);
   let growthFactor = tempFactor * seed.growthSpeed;
   if (!frozen) {
     const comfort = need.minWater * 1.5;

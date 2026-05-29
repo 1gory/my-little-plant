@@ -55,7 +55,7 @@ body {
    background: transparent — otherwise the button's default square background would show
    through the transparent PNG corners. Colored/special variants override border-image-source.
    ───────────────────────────────────────────────────────────── */
-.scene, .card, .act, .hint, .set-row, .weather-bar, .stat, .facts {
+.scene, .card, .act, .hint, .set-row, .weather-bar, .stat, .facts, .run-stats {
   position: relative;
   border: 8px solid transparent;
   border-image: url(icons/ui/frame-sand.png?v8) 8 fill / 8px stretch;
@@ -216,6 +216,13 @@ body {
 .act-label { letter-spacing: .3px; }
 
 /* "Interesting facts" block on the finale */
+/* End-screen care stats: watered / trimmed / repotted over the run */
+.run-stats { display: flex; justify-content: space-around; padding: 10px 8px; margin: 4px 0 8px; }
+.run-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; }
+.run-stat-ico { width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; }
+.run-stat-num { font-size: 19px; font-weight: 700; color: var(--ink); line-height: 1; margin-top: 2px; }
+.run-stat-lbl { font-size: 12px; color: var(--muted); }
+
 .facts { padding: 4px 12px 6px; text-align: left; font-size: 13px; color: var(--ink); margin: 4px 0 8px; }
 .facts-title { font-weight: 700; color: var(--green-d); margin-bottom: 3px; }
 .facts ul { margin: 0; padding-left: 18px; }

@@ -71,5 +71,10 @@ export function defaultState() {
     lowHealthHours: 0,
     lastWeather: 'sunny',
     weatherSeed: Math.floor(Math.random() * 0xffffffff),
+    // Care counters for the end-screen stats. New fields, so old saves just
+    // pick up 0 via hydrate() - no version bump needed.
+    timesWatered: 0,
+    timesTrimmed: 0,
+    timesRepotted: 0,
   };
 }

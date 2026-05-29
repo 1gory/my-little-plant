@@ -190,6 +190,20 @@ function endScreen(state, win) {
         <ul>${facts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>
       </div>`
     : '';
+  // Care stats collected over the run.
+  const careStats = [
+    { ico: 'icons/ui/droplet.png', n: state.timesWatered || 0, label: 'watered' },
+    { ico: 'icons/ui/scissors.png', n: state.timesTrimmed || 0, label: 'trimmed' },
+    { ico: 'icons/status/repot.png', n: state.timesRepotted || 0, label: 'repotted' },
+  ];
+  const statsHtml = `
+    <div class="run-stats">
+      ${careStats.map((s) => `<div class="run-stat">
+        <img class="run-stat-ico" src="${s.ico}" alt="">
+        <span class="run-stat-num">${s.n}</span>
+        <span class="run-stat-lbl">${s.label}</span>
+      </div>`).join('')}
+    </div>`;
   return `
     <header class="head">
       <h1>${win ? 'Congratulations! 🎉' : 'Oh no… 🥀'}</h1>
@@ -198,6 +212,7 @@ function endScreen(state, win) {
         : `Your <strong>${esc(plantName)}</strong> lived ${day} day${day === 1 ? '' : 's'}.<br>Better luck next time!`}</p>
     </header>
     <div class="scene">${plantSVG({ growth: 100, driedLeaves: win ? 0 : 6, seed, pot, finished: win, withered: !win })}</div>
+    ${statsHtml}
     ${factsHtml}
     <div class="actions"><button class="act highlight wide" data-action="restart"><span>Plant again 🌱</span></button></div>`;
 }
