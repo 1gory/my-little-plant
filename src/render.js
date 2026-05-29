@@ -9,12 +9,12 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-// Иконка погоды: пиксель-арт PNG.
+// Weather icon: pixel-art PNG.
 function weatherIcon(w, cls) {
   return `<img class="w-icon ${cls}" src="${w.icon}" alt="${esc(w.label)}">`;
 }
 
-// Иконка стат-бара (рост/влажность/здоровье) — пиксель-арт PNG из icons/ui/.
+// Stat-bar icon (growth/moisture/health) — pixel-art PNG from icons/ui/.
 function statImg(name) {
   return `<img class="stat-ico-img" src="icons/ui/${name}.png" alt="">`;
 }
@@ -67,7 +67,7 @@ function choosePot(state) {
     <div class="grid">${cards}</div>`;
 }
 
-// Стат-строка как в концепте: иконка слева, подпись над полоской.
+// Stat row as in the concept: icon on the left, label above the bar.
 function bar(icon, label, value, cls, showValue = true, note = '') {
   const v = Math.round(value);
   const noteSpan = note ? `<span class="stat-note">${note}</span>` : '';
@@ -82,8 +82,8 @@ function bar(icon, label, value, cls, showValue = true, note = '') {
     </div>`;
 }
 
-// Влажность почвы: не процент, а шкала между двумя крайностями.
-// Маркер плавно едет (CSS transition) — анимацию полива запускает main.js.
+// Soil moisture: not a percentage, but a scale between two extremes.
+// The marker moves smoothly (CSS transition) — the watering animation is triggered by main.js.
 function moisture(value) {
   const v = Math.max(0, Math.min(100, value));
   return `
@@ -108,16 +108,16 @@ function growing(state, now) {
   const w = WEATHER[state.lastWeather] || weatherAt(state.weatherSeed, hourIndex);
   const rootBound = isRootBound(state);
 
-  // Потребность во влаге у этого растения. dryThreshold — ниже него рост уже
-  // тормозит (порог = comfort = minWater × 1.5, как в движке), о нём и
-  // предупреждаем. На шкале влажности ставим засечку на minWater.
+  // This plant's water need. dryThreshold — below it growth already
+  // slows down (threshold = comfort = minWater × 1.5, as in the engine), and that's
+  // what we warn about. On the moisture scale we put a notch at minWater.
   const need = WATER_NEED[seed?.waterNeed] || WATER_NEED.mid;
   const dryThreshold = need.minWater * 1.5;
-  const day = gameDay(state, now); // текущий день роста (1-based)
+  const day = gameDay(state, now); // current growth day (1-based)
 
-  // Прогноз на 3 ближайших дня (как в макете): день недели + иконка погоды.
-  // Если день совпал с предыдущим прогнозным — берём ближайший следующий блок
-  // с другой погодой (до +24ч), чтобы три дня не были одинаковыми.
+  // Forecast for the next 3 days (as in the mockup): weekday + weather icon.
+  // If a day matches the previous forecast one — take the nearest following block
+  // with different weather (up to +24h), so the three days aren't identical.
   const unit = getTempUnit();
   let prevFc = null;
   const fc = [1, 2, 3].map((d) => {
@@ -135,7 +135,7 @@ function growing(state, now) {
       </div>`;
   }).join('');
 
-  // Подсказка + настроение растения (иконка в плашке зависит от состояния).
+  // Hint + plant mood (the icon in the badge depends on the state).
   let hint = 'Growing along nicely', mood = 'happy';
   if (rootBound) { hint = 'Roots are cramped — time to repot into a deeper pot!'; mood = 'repot'; }
   else if (state.water < dryThreshold) { hint = 'The soil is dry — water your plant'; mood = 'thirsty'; }
@@ -182,7 +182,7 @@ function endScreen(state, win) {
   const pot = getPot(state.potId);
   const day = gameDay(state);
   const plantName = seed?.plantName || '???';
-  // Интересные факты о выращенном растении (показываем при победе).
+  // Fun facts about the grown plant (shown on a win).
   const facts = win && Array.isArray(seed?.facts) ? seed.facts : [];
   const factsHtml = facts.length
     ? `<div class="facts">

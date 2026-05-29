@@ -1,13 +1,13 @@
 import { STORAGE_KEY } from './config.js';
 
-// Хранилище: chrome.storage.local в расширении, localStorage при открытии
-// popup.html напрямую (удобно для теста).
+// Storage: chrome.storage.local in the extension, localStorage when opening
+// popup.html directly (convenient for testing).
 const hasChrome =
   typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
 
-// Версия ФОРМЫ сохранённого состояния. Поднимай на 1 при НЕсовместимом
-// изменении формы и добавляй шаг в migrate(). Добавление нового поля со
-// значением по умолчанию версию поднимать НЕ требует — его подхватит hydrate().
+// Version of the saved state SHAPE. Bump by 1 on an INCOMPATIBLE shape
+// change and add a step in migrate(). Adding a new field with a default
+// value does NOT require a version bump — hydrate() will pick it up.
 const CURRENT_VERSION = 1;
 
 export async function loadState() {
@@ -26,21 +26,21 @@ export async function loadState() {
   return hydrate(stored);
 }
 
-// Приводит сохранённое (возможно, старое/неполное) состояние к актуальному,
-// НЕ теряя прогресс игрока. Это главный предохранитель при обновлениях.
+// Brings saved state (possibly old/incomplete) up to the current shape
+// WITHOUT losing player progress. This is the main safeguard on updates.
 function hydrate(stored) {
   if (!stored || typeof stored !== 'object') return defaultState();
-  // 1) Подмешиваем дефолты: любые НОВЫЕ поля будущих версий появятся со значением
-  //    по умолчанию, а реальные значения игрока перекрывают их.
+  // 1) Merge in defaults: any NEW fields from future versions appear with their
+  //    default value, while the player's real values override them.
   let s = { ...defaultState(), ...stored };
-  // 2) Пошаговые миграции для несовместимых изменений формы.
+  // 2) Step-by-step migrations for incompatible shape changes.
   s = migrate(s);
   s.version = CURRENT_VERSION;
   return s;
 }
 
-// Цепочка миграций по версии. Каждый шаг приводит форму старой версии к следующей.
-// Пример на будущее (если переименуешь поле water → moisture):
+// Version-based migration chain. Each step brings an old version's shape to the next.
+// Future example (if you rename the field water -> moisture):
 //   if (s.version < 2) { s.moisture = s.water ?? 50; delete s.water; s.version = 2; }
 function migrate(s) {
   return s;
@@ -64,7 +64,7 @@ export function defaultState() {
     startedAt: null,
     lastTick: null,
     growth: 0,
-    water: 50,   // старт в центре шкалы влажности (маркер по центру), не в зоне перелива
+    water: 50,   // start at the center of the moisture scale (marker centered), not in the overflow zone
     health: 100,
     driedLeaves: 0,
     _driedProgress: 0,

@@ -21,19 +21,19 @@ export function isRootBound(state) {
   return state.growth >= potCapacity(state.potTier) - 0.01;
 }
 
-// Один час симуляции. Мутирует копию state.
+// One hour of simulation. Mutates a copy of state.
 function stepHour(state, seed, pot, hourIndex, baseGrowthPerHour, frozen) {
   const w = weatherAt(state.weatherSeed, hourIndex);
   const need = WATER_NEED[seed.waterNeed];
 
   if (!frozen) {
-    // --- Вода ---
+    // --- Water ---
     const decay = WATER_DECAY_PER_HOUR * need.decay * pot.decayFactor * w.decayMult;
     state.water -= decay;
     state.water += w.rain;
     state.water = clamp(state.water);
 
-    // --- Здоровье ---
+    // --- Health ---
     const thirsty = state.water < need.minWater;
     const tooManyDried = state.driedLeaves > DRIED_LEAVES_THRESHOLD;
     let tempHealth = 0;
@@ -45,7 +45,7 @@ function stepHour(state, seed, pot, hourIndex, baseGrowthPerHour, frozen) {
     if (!thirsty && tempHealth >= 0 && !tooManyDried) dh += HEALTH_RECOVER_PER_HOUR;
     state.health = clamp(state.health + dh);
 
-    // --- Сухие листья ---
+    // --- Dried leaves ---
     let driedRate = 1 / 30;
     if (thirsty) driedRate *= 3;
     if (tempHealth < 0) driedRate *= 2;
@@ -53,20 +53,20 @@ function stepHour(state, seed, pot, hourIndex, baseGrowthPerHour, frozen) {
     state._driedProgress = (state._driedProgress || 0) + driedRate;
     while (state._driedProgress >= 1) { state._driedProgress -= 1; state.driedLeaves += 1; }
 
-    // --- Засыхание насмерть ---
+    // --- Withering to death ---
     if (state.health <= 0) state.lowHealthHours = (state.lowHealthHours || 0) + 1;
     else state.lowHealthHours = 0;
   }
 
-  // --- Температура (только множитель роста, даже при заморозке) ---
+  // --- Temperature (growth multiplier only, even when frozen) ---
   let tempFactor = 1.0;
   if (seed.idealTemp !== 'mild' && w.temp !== 'mild') {
     tempFactor = w.temp === seed.idealTemp ? 1.25 : 0.6;
   }
-  // Облачность/холод/дождь дополнительно сбавляют рост (свойство погоды).
+  // Clouds/cold/rain further reduce growth (weather property).
   tempFactor *= w.growthMult;
 
-  // --- Рост (работает всегда) ---
+  // --- Growth (always active) ---
   const cap = potCapacity(state.potTier);
   let growthFactor = tempFactor * seed.growthSpeed;
   if (!frozen) {
@@ -84,7 +84,7 @@ function stepHour(state, seed, pot, hourIndex, baseGrowthPerHour, frozen) {
   state.lastWeather = w.id;
 }
 
-// Прогоняет симуляцию от lastTick до now. Возвращает новый state.
+// Runs the simulation from lastTick to now. Returns a new state.
 export function advance(state, now = Date.now(), frozen = false) {
   if (state.phase !== 'growing') return state;
   const s = structuredClone(state);
@@ -92,8 +92,8 @@ export function advance(state, now = Date.now(), frozen = false) {
   const pot = getPot(s.potId);
   if (!seed || !pot) return s;
 
-  // Базовый прирост рассчитан так, чтобы при idealTemp и нормальном поливе
-  // растение достигло 100% ровно за seed.growthDays реальных дней.
+  // Base increment is calculated so that with idealTemp and normal watering
+  // the plant reaches 100% in exactly seed.growthDays real days.
   const baseGrowthPerHour = 100 / ((seed.growthDays || 30) * 24);
 
   let elapsedHours = Math.floor((now - s.lastTick) / HOUR);
@@ -120,7 +120,7 @@ export function advance(state, now = Date.now(), frozen = false) {
   return s;
 }
 
-// Текущий день игры (1-based) для UI.
+// Current game day (1-based) for UI.
 export function gameDay(state, now = Date.now()) {
   if (!state.startedAt) return 0;
   const ref = state.finishedAt || state.witheredAt || now;

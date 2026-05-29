@@ -1,5 +1,5 @@
-// Семечки = реальные растения. Описание намекает на уход, но не раскрывает название.
-// plantName открывается только на финальном экране.
+// Seeds = real plants. The description hints at care but does not reveal the name.
+// plantName is revealed only on the final screen.
 
 export const SEEDS = [
   {
@@ -16,9 +16,9 @@ export const SEEDS = [
     waterNeed: 'mid',
     flowerColor: '#e53935',
     leafColor: '#43a047',
-    // icon — обрезанная по краям иконка семечка; iconSize — длинная сторона в px.
-    // PNG обрезаны до содержимого, поэтому iconSize = реальный видимый размер.
-    // Отражает реальный размер семени: базилик мелкий, редис/томат средние, подсолнух крупный.
+    // icon — seed icon cropped to its edges; iconSize — longest side in px.
+    // PNGs are cropped to content, so iconSize = the real visible size.
+    // Reflects the real seed size: basil small, radish/tomato medium, sunflower large.
     seed: { icon: 'icons/seeds/radish.png', iconSize: 50 },
   },
   {
@@ -71,7 +71,7 @@ export const SEEDS = [
   },
 ];
 
-// Горшки: влияют на скорость высыхания почвы (decayFactor).
+// Pots: affect how fast the soil dries out (decayFactor).
 export const POTS = [
   {
     id: 'terracotta',

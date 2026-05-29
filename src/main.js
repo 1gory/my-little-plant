@@ -6,12 +6,12 @@ import { POT_TIERS, HOUR, WATER_PER_POUR } from './config.js';
 
 const root = document.getElementById('app');
 let state;
-let view = null; // null — игра, 'settings' — экран настроек (не часть state)
+let view = null; // null - game, 'settings' - settings screen (not part of state)
 
 function frozen() { return devFrozen(); }
 
-// Дожидаемся пиксельного шрифта до первого рендера, иначе попап успевает
-// отрисоваться запасным моноширинным и шрифт «теряется» на старте.
+// Wait for the pixel font before the first render, otherwise the popup gets
+// drawn with the fallback monospace font and the font is "lost" at startup.
 async function ensureFonts() {
   if (!document.fonts || !document.fonts.load) return;
   try {
@@ -20,7 +20,7 @@ async function ensureFonts() {
         document.fonts.load('400 16px "Jersey 25"'),
         document.fonts.load('700 16px "Jersey 25"'),
       ]),
-      new Promise((r) => setTimeout(r, 400)), // страховка от подвисания
+      new Promise((r) => setTimeout(r, 400)), // safeguard against hanging
     ]);
   } catch {}
 }
@@ -65,16 +65,16 @@ root.addEventListener('click', async (e) => {
       break;
 
     case 'water': {
-      // Догоняем время и перерисовываем — маркер встаёт на текущую влажность.
+      // Catch up time and re-render - the marker lands on the current moisture.
       state = advance(state, Date.now(), frozen());
       draw();
       if (state.phase === 'growing') {
-        // Полив добавляет небольшую порцию влаги (а не заливает до краёв) —
-        // так влажность дозируется точнее, полный горшок — за несколько нажатий.
+        // Watering adds a small portion of moisture (not filling to the brim) -
+        // so moisture is dosed more precisely, a full pot takes several taps.
         state.water = Math.min(100, state.water + WATER_PER_POUR);
         const marker = document.getElementById('moisture-marker');
         if (marker) {
-          // Следующий кадр — двигаем маркер к новому уровню, CSS-переход анимирует.
+          // Next frame - move the marker to the new level, CSS transition animates it.
           await new Promise((r) => requestAnimationFrame(r));
           marker.style.left = state.water + '%';
           await new Promise((r) => setTimeout(r, 850));
@@ -115,7 +115,7 @@ root.addEventListener('click', async (e) => {
 
     case 'set-temp-unit':
       setTempUnit(btn.dataset.unit);
-      draw(); // остаёмся в настройках, переключатель обновляется
+      draw(); // stay in settings, the toggle updates
       break;
 
     case 'restart':
@@ -135,7 +135,7 @@ root.addEventListener('click', async (e) => {
   }
 });
 
-// Чекбокс «заморозить показатели» — слушаем отдельно, т.к. change не всплывает через click
+// "Freeze stats" checkbox - listened separately, since change does not bubble through click
 root.addEventListener('change', (e) => {
   if (e.target.dataset.action === 'toggle-freeze') {
     try { localStorage.setItem('mlp_dev_freeze', e.target.checked ? '1' : '0'); } catch {}

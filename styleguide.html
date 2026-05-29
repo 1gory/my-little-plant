@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Little Plant — Экран роста: рендер vs концепт</title>
+  <title>My Little Plant — Growth screen: render vs concept</title>
 
   <link rel="preload" href="fonts/Jersey25.ttf" as="font" type="font/ttf" crossorigin>
 
-  <!-- Реальный CSS приложения. Анти-кэш: всегда свежий styles.css. -->
+  <!-- Real app CSS. Anti-cache: always fresh styles.css. -->
   <meta http-equiv="Cache-Control" content="no-store">
   <script>document.write('<link rel="stylesheet" href="styles.css?t=' + Date.now() + '">');</script>
   <noscript><link rel="stylesheet" href="styles.css"></noscript>
@@ -24,10 +24,10 @@
 </head>
 <body>
 <div class="sg-wrap">
-  <h1 class="sg-title">Экран роста: рендер vs концепт</h1>
+  <h1 class="sg-title">Growth screen: render vs concept</h1>
 
   <div class="sg-2col">
-    <!-- НАШ РЕНДЕР (реальные классы из styles.css) -->
+    <!-- OUR RENDER (real classes from styles.css) -->
     <div>
       <div class="popup"><div class="app">
         <header class="head growing-head">
@@ -53,18 +53,18 @@
           <button class="act highlight" data-action="repot"><span class="act-ico"><img class="act-ico-img" src="icons/pots/terracotta.png" alt=""></span><span class="act-label">Repot</span></button>
         </div>
       </div></div>
-      <p class="sg-cap">наш рендер</p>
+      <p class="sg-cap">our render</p>
     </div>
 
-    <!-- КОНЦЕПТ -->
+    <!-- CONCEPT -->
     <div class="sg-ref">
       <img src="art.png" alt="concept">
-      <p class="sg-cap">концепт art.png</p>
+      <p class="sg-cap">concept art.png</p>
     </div>
   </div>
 </div>
 
-<!-- Настоящий plantSVG в сцену (модули без зависимостей грузятся напрямую) -->
+<!-- Real plantSVG into the scene (dependency-free modules are loaded directly) -->
 <script type="module">
   import { plantSVG } from './src/plant-svg.js';
   import { getSeed, getPot } from './src/data.js';

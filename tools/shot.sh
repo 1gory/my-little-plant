@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 #
-# Скриншот попапа в файл (для просмотра в IDE — инлайн-картинки в терминале не видны).
+# Screenshot the popup to a file (for viewing in the IDE — inline images aren't visible in the terminal).
 #
-# Использование:
-#   bash tools/shot.sh [имя] [ширина] [высота]
-# Примеры:
+# Usage:
+#   bash tools/shot.sh [name] [width] [height]
+# Examples:
 #   bash tools/shot.sh                 # -> docs/shots/popup.png  (340x720)
 #   bash tools/shot.sh seed-select     # -> docs/shots/seed-select.png
 #   bash tools/shot.sh growing 340 760
 #
-# Снимает текущий экран попапа (по умолчанию — экран выбора семечка, т.к.
-# свежее состояние). Требует Google Chrome и python3.
+# Captures the current popup screen (by default — the seed-selection screen, as
+# the fresh state). Requires Google Chrome and python3.
 
 set -euo pipefail
 
@@ -24,7 +24,7 @@ CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 mkdir -p "$ROOT/docs/shots"
 
-# Поднимаем локальный сервер (ES-модули не грузятся с file://).
+# Start a local server (ES modules don't load from file://).
 ( cd "$ROOT" && python3 -m http.server "$PORT" >/tmp/mlp-shot-server.log 2>&1 ) &
 SRV=$!
 trap 'kill $SRV 2>/dev/null || true' EXIT
@@ -35,4 +35,4 @@ sleep 1
   --virtual-time-budget=3000 \
   --screenshot="$OUT" "http://localhost:${PORT}/popup.html" 2>/dev/null
 
-echo "Сохранено: docs/shots/$NAME.png (${W}x${H}, @2x)"
+echo "Saved: docs/shots/$NAME.png (${W}x${H}, @2x)"

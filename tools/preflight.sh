@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 #
-# Предпубликационная проверка на типовые нарушения Chrome Web Store.
-# Механические проверки — НЕ заменяет ручной чек-лист в PUBLISH-CHECKLIST.md,
-# но ловит то, что чаще всего приводит к отклонению.
+# Pre-publication check for common Chrome Web Store violations.
+# Mechanical checks — does NOT replace the manual checklist in PUBLISH-CHECKLIST.md,
+# but catches what most often leads to rejection.
 #
 #   bash tools/preflight.sh
 #
-# Коды: [PASS] ок · [WARN] посмотреть глазами · [FAIL] блокер публикации.
+# Codes: [PASS] ok · [WARN] inspect manually · [FAIL] publication blocker.
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
@@ -19,64 +19,64 @@ fails(){ echo "  [FAIL] $1"; fail=$((fail+1)); }
 echo "Preflight: $ROOT"
 echo
 
-# 1. DEV-режим выключен (нет кнопок перемотки времени у игроков).
-echo "1) Dev-режим"
+# 1. DEV mode is off (no time-skip buttons for players).
+echo "1) Dev mode"
 if grep -q "export const DEV = false" src/config.js; then pass "DEV = false";
-else fails "src/config.js: DEV должен быть false перед публикацией"; fi
+else fails "src/config.js: DEV must be false before publishing"; fi
 
-# 2. Нет отладочных console.* в коде.
-echo "2) Отладочный вывод"
+# 2. No debug console.* in the code.
+echo "2) Debug output"
 if grep -rn "console\.\(log\|debug\|warn\|error\)" src/ >/dev/null; then
-  fails "найдены console.* в src/:"; grep -rn "console\.\(log\|debug\|warn\|error\)" src/ | sed 's/^/        /';
-else pass "console.* нет"; fi
+  fails "found console.* in src/:"; grep -rn "console\.\(log\|debug\|warn\|error\)" src/ | sed 's/^/        /';
+else pass "no console.*"; fi
 
-# 3. Permissions — только storage (минимум прав = меньше вопросов на ревью).
+# 3. Permissions — storage only (fewer permissions = fewer review questions).
 echo "3) Permissions"
 perms=$(grep -o '"permissions"[^]]*]' manifest.json)
 if echo "$perms" | grep -q '"storage"' && ! echo "$perms" | grep -qE '"(tabs|<all_urls>|history|cookies|webRequest|scripting|activeTab|notifications|alarms)"'; then
-  pass "только минимально нужные: $perms";
-else warns "проверь права вручную: $perms"; fi
+  pass "only minimally required: $perms";
+else warns "check permissions manually: $perms"; fi
 
-# 4. Нет удалённого кода (внешние скрипты/шрифты/CDN). xmlns SVG — не сетевой запрос, игнорируем.
-echo "4) Удалённый код / внешние ресурсы"
+# 4. No remote code (external scripts/fonts/CDN). xmlns SVG is not a network request, ignore it.
+echo "4) Remote code / external resources"
 remote=$(grep -rnoE "https?://[^\"' )]+" src/ popup.html styles.css 2>/dev/null | grep -v "www.w3.org/2000/svg")
 if [ -n "$remote" ]; then
-  warns "внешние URL — убедись, что это не загрузка кода/шрифтов:"; echo "$remote" | sed 's/^/        /';
-else pass "внешних URL нет (шрифты локальные, remote code = No)"; fi
+  warns "external URLs — make sure these don't load code/fonts:"; echo "$remote" | sed 's/^/        /';
+else pass "no external URLs (fonts local, remote code = No)"; fi
 if grep -q "fonts.googleapis\|fonts.gstatic\|cdn" popup.html styles.css 2>/dev/null; then
-  fails "ссылка на внешние шрифты/CDN — нарушение (нужно всё локально)"; fi
+  fails "reference to external fonts/CDN — a violation (everything must be local)"; fi
 
-# 5. Версии manifest и package совпадают.
-echo "5) Версии"
+# 5. manifest and package versions match.
+echo "5) Versions"
 mv=$(grep -m1 '"version"' manifest.json | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
 pv=$(grep -m1 '"version"' package.json | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
-if [ "$mv" = "$pv" ] && [ -n "$mv" ]; then pass "manifest и package: $mv";
-else warns "версии расходятся: manifest=$mv package=$pv"; fi
+if [ "$mv" = "$pv" ] && [ -n "$mv" ]; then pass "manifest and package: $mv";
+else warns "versions differ: manifest=$mv package=$pv"; fi
 
-# 6. Иконки расширения на месте.
-echo "6) Иконки расширения"
+# 6. Extension icons in place.
+echo "6) Extension icons"
 miss=""
 for i in 16 48 128; do [ -f "icons/icon${i}.png" ] || miss="$miss icon${i}.png"; done
-if [ -z "$miss" ]; then pass "icon16/48/128 на месте"; else fails "нет иконок:$miss"; fi
+if [ -z "$miss" ]; then pass "icon16/48/128 in place"; else fails "missing icons:$miss"; fi
 
-# 7. Дев-артефакты не должны попасть в сборку (должны быть в .gitignore / исключены из zip).
-echo "7) Дев-артефакты (не должны уехать в стор)"
+# 7. Dev artifacts must not end up in the build (should be in .gitignore / excluded from zip).
+echo "7) Dev artifacts (must not ship to the store)"
 artifacts=""
-[ -d "icons/seeds/_raw" ] && artifacts="$artifacts icons/seeds/_raw/(исходники листов)"
+[ -d "icons/seeds/_raw" ] && artifacts="$artifacts icons/seeds/_raw/(sheet sources)"
 [ -d "tools" ] && artifacts="$artifacts tools/"
 [ -d "docs/shots" ] && artifacts="$artifacts docs/shots/"
 ls *.mjs >/dev/null 2>&1 && artifacts="$artifacts *.mjs"
-if [ -n "$artifacts" ]; then warns "при сборке zip ИСКЛЮЧИ:$artifacts (см. RELEASE.md)"; else pass "лишних дев-папок нет"; fi
+if [ -n "$artifacts" ]; then warns "when building the zip, EXCLUDE:$artifacts (see RELEASE.md)"; else pass "no stray dev folders"; fi
 
-# 8. CSP в манифесте не разрешает удалённые источники.
+# 8. CSP in the manifest does not allow remote sources.
 echo "8) Content Security Policy"
 if grep -q "content_security_policy" manifest.json; then
   if grep -A3 "content_security_policy" manifest.json | grep -qE "https?://"; then
-    fails "CSP разрешает внешние источники — убери";
-  else pass "CSP только 'self'"; fi
-else warns "CSP не задан (для MV3 обычно ок, проверь)"; fi
+    fails "CSP allows external sources — remove them";
+  else pass "CSP is 'self' only"; fi
+else warns "CSP not set (usually ok for MV3, check)"; fi
 
 echo
-if [ "$fail" -gt 0 ]; then echo "ИТОГ: $fail блокер(ов), $warn предупреждение(й) — публиковать НЕЛЬЗЯ, пока есть [FAIL].";
-elif [ "$warn" -gt 0 ]; then echo "ИТОГ: блокеров нет, $warn предупреждение(й) — посмотри [WARN] глазами.";
-else echo "ИТОГ: всё чисто."; fi
+if [ "$fail" -gt 0 ]; then echo "RESULT: $fail blocker(s), $warn warning(s) — DO NOT publish while there are [FAIL].";
+elif [ "$warn" -gt 0 ]; then echo "RESULT: no blockers, $warn warning(s) — inspect [WARN] manually.";
+else echo "RESULT: all clean."; fi
