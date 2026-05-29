@@ -19,7 +19,7 @@ export const SEEDS = [
     // icon — обрезанная по краям иконка семечка; iconSize — длинная сторона в px.
     // PNG обрезаны до содержимого, поэтому iconSize = реальный видимый размер.
     // Отражает реальный размер семени: базилик мелкий, редис/томат средние, подсолнух крупный.
-    seed: { shape: 'round', color: '#7b3f1e', size: 'small', icon: 'icons/seeds/radish.png', iconSize: 50 },
+    seed: { icon: 'icons/seeds/radish.png', iconSize: 50 },
   },
   {
     id: 'basil',
@@ -35,7 +35,7 @@ export const SEEDS = [
     waterNeed: 'mid',
     flowerColor: '#ffffff',
     leafColor: '#2e7d32',
-    seed: { shape: 'oval-tall', color: '#1a0a00', size: 'small', icon: 'icons/seeds/basil.png', iconSize: 30 },
+    seed: { icon: 'icons/seeds/basil.png', iconSize: 30 },
   },
   {
     id: 'tomato',
@@ -51,7 +51,7 @@ export const SEEDS = [
     waterNeed: 'high',
     flowerColor: '#ffb300',
     leafColor: '#558b2f',
-    seed: { shape: 'flat-wide', color: '#d4b896', size: 'medium', icon: 'icons/seeds/tomato.png', iconSize: 52 },
+    seed: { icon: 'icons/seeds/tomato.png', iconSize: 52 },
   },
   {
     id: 'sunflower',
@@ -67,7 +67,7 @@ export const SEEDS = [
     waterNeed: 'low',
     flowerColor: '#fdd835',
     leafColor: '#558b2f',
-    seed: { shape: 'oval-tall', color: '#e8e0cc', size: 'large', striped: true, icon: 'icons/seeds/sunflower.png', iconSize: 92 },
+    seed: { icon: 'icons/seeds/sunflower.png', iconSize: 92 },
   },
 ];
 

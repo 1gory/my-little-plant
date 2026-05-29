@@ -34,17 +34,15 @@ function stepHour(state, seed, pot, hourIndex, baseGrowthPerHour, frozen) {
     state.water = clamp(state.water);
 
     // --- Здоровье ---
-    const waterlogged = seed.overwaterSensitive && state.water > 85;
     const thirsty = state.water < need.minWater;
     const tooManyDried = state.driedLeaves > DRIED_LEAVES_THRESHOLD;
     let tempHealth = 0;
     if (seed.idealTemp !== 'mild' && w.temp !== 'mild' && w.temp !== seed.idealTemp) tempHealth = -0.4;
     let dh = 0;
     if (thirsty) dh -= 1.0;
-    if (waterlogged) dh -= 0.8;
     dh += tempHealth;
     if (tooManyDried) dh -= 0.2 * (state.driedLeaves - DRIED_LEAVES_THRESHOLD);
-    if (!thirsty && !waterlogged && tempHealth >= 0 && !tooManyDried) dh += HEALTH_RECOVER_PER_HOUR;
+    if (!thirsty && tempHealth >= 0 && !tooManyDried) dh += HEALTH_RECOVER_PER_HOUR;
     state.health = clamp(state.health + dh);
 
     // --- Сухие листья ---

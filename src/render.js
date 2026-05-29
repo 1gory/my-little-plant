@@ -68,7 +68,6 @@ function choosePot(state) {
 }
 
 // Стат-строка как в концепте: иконка слева, подпись над полоской.
-// icon пока эмодзи — позже заменится на <img class="stat-ico-img">.
 function bar(icon, label, value, cls, showValue = true, note = '') {
   const v = Math.round(value);
   const noteSpan = note ? `<span class="stat-note">${note}</span>` : '';

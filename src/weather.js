@@ -64,13 +64,3 @@ export function weatherAt(seed, hourIndex) {
   const block = Math.floor(hourIndex / WEATHER_BLOCK_HOURS);
   return WEATHER[SCALE[blockIndex(seed >>> 0, block)]];
 }
-
-// Прогноз на ближайшие блоки (для UI «что дальше»).
-export function forecast(seed, hourIndex, blocks = 3) {
-  const out = [];
-  const startBlock = Math.floor(hourIndex / WEATHER_BLOCK_HOURS);
-  for (let i = 1; i <= blocks; i++) {
-    out.push(weatherAt(seed, (startBlock + i) * WEATHER_BLOCK_HOURS));
-  }
-  return out;
-}
