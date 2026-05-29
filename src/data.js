@@ -14,6 +14,9 @@ export const SEEDS = [
     growthSpeed: 1.0,
     idealTemp: 'cold',
     waterNeed: 'mid',
+    // Sensitivity to overwatering -> root rot (higher = rots faster in a swamp).
+    // Inverse of thirst: drought-tolerant plants suffer most from a swamp.
+    overwaterSens: 0.7,
     flowerColor: '#e53935',
     leafColor: '#43a047',
     // icon — seed icon cropped to its edges; iconSize — longest side in px.
@@ -33,6 +36,7 @@ export const SEEDS = [
     growthSpeed: 1.0,
     idealTemp: 'warm',
     waterNeed: 'mid',
+    overwaterSens: 1.3, // "doesn't like wet feet" — prone to root rot
     flowerColor: '#ffffff',
     leafColor: '#2e7d32',
     seed: { icon: 'icons/seeds/basil.png', iconSize: 30 },
@@ -49,6 +53,7 @@ export const SEEDS = [
     growthSpeed: 1.0,
     idealTemp: 'warm',
     waterNeed: 'high',
+    overwaterSens: 0.5, // thirsty by nature — tolerates heavy watering best
     flowerColor: '#ffb300',
     leafColor: '#558b2f',
     seed: { icon: 'icons/seeds/tomato.png', iconSize: 52 },
@@ -65,6 +70,7 @@ export const SEEDS = [
     growthSpeed: 1.0,
     idealTemp: 'warm',
     waterNeed: 'low',
+    overwaterSens: 1.5, // most drought-tolerant -> most at risk from overwatering
     flowerColor: '#fdd835',
     leafColor: '#558b2f',
     seed: { icon: 'icons/seeds/sunflower.png', iconSize: 92 },

@@ -74,14 +74,16 @@ The game is plain ES modules — no build step. Load the folder unpacked
 
 ### Package for release
 See `RELEASE.md` for the authoritative, step-by-step release runbook (it gates
-on `DEV = false` and version sync). Short version:
+on `DEV = false` and version sync). To build the store ZIP:
 
 ```bash
-VERSION=$(grep '"version"' manifest.json | head -1 | sed 's/.*"\([0-9.]*\)".*/\1/')
-zip -r my-little-plant-v${VERSION}.zip \
-  manifest.json popup.html styles.css src/ icons/ fonts/ LICENSE \
-  -x 'icons/icon.png' -x 'icons/*/_raw/*' -x '*.DS_Store'
+bash tools/pack.sh
 ```
+
+`tools/pack.sh` is the single source of truth for packaging: it refuses to run
+with `DEV = true`, ships a **whitelist** of only the runtime files (so docs,
+tools, `_raw/` sheets and any stray files can't leak in), and verifies the
+result. Output: `my-little-plant-v<version>.zip`.
 
 ## License
 

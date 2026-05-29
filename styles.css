@@ -197,6 +197,11 @@ body {
 .hint span { flex: 1; }
 .gear-img { display: block; width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; }
 
+/* Inline pixel glyph next to text (sprout / bloom / celebrate / wilt) — replaces
+   the old emoji. Sized to the surrounding text so it scales per context. */
+.tglyph { height: 1.5em; width: auto; vertical-align: -0.4em; image-rendering: pixelated; }
+.facts-title .tglyph { vertical-align: -0.3em; }
+
 /* Action buttons — cards "icon on top, label below" (as in the mockup) */
 .actions { display: flex; gap: 8px; }
 .act {

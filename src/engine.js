@@ -6,6 +6,10 @@ import {
   WITHER_HOURS,
   DRIED_LEAVES_THRESHOLD,
   MAX_CATCHUP_HOURS,
+  OVERWATER_THRESHOLD,
+  ROT_PER_HOUR,
+  ROT_DRY_RECOVER,
+  ROT_HEALTH_PENALTY,
 } from './config.js';
 import { getSeed, getPot, WATER_NEED } from './data.js';
 import { weatherAt } from './weather.js';
@@ -33,6 +37,16 @@ function stepHour(state, seed, pot, hourIndex, baseGrowthPerHour, frozen) {
     state.water += w.rain;
     state.water = clamp(state.water);
 
+    // --- Overwatering -> root rot ---
+    // Waterlogged soil builds rot (scaled by how sensitive the seed is);
+    // once the soil dries below the threshold the rot slowly recedes.
+    const waterlogged = state.water > OVERWATER_THRESHOLD;
+    if (waterlogged) {
+      state.rot = clamp((state.rot || 0) + ROT_PER_HOUR * (seed.overwaterSens || 0), 0, 100);
+    } else {
+      state.rot = clamp((state.rot || 0) - ROT_DRY_RECOVER, 0, 100);
+    }
+
     // --- Health ---
     const thirsty = state.water < need.minWater;
     const tooManyDried = state.driedLeaves > DRIED_LEAVES_THRESHOLD;
@@ -42,7 +56,8 @@ function stepHour(state, seed, pot, hourIndex, baseGrowthPerHour, frozen) {
     if (thirsty) dh -= 1.0;
     dh += tempHealth;
     if (tooManyDried) dh -= 0.2 * (state.driedLeaves - DRIED_LEAVES_THRESHOLD);
-    if (!thirsty && tempHealth >= 0 && !tooManyDried) dh += HEALTH_RECOVER_PER_HOUR;
+    if (state.rot > 0) dh -= ROT_HEALTH_PENALTY * (state.rot / 100); // rot drags health down
+    if (!thirsty && tempHealth >= 0 && !tooManyDried && state.rot <= 0) dh += HEALTH_RECOVER_PER_HOUR;
     state.health = clamp(state.health + dh);
 
     // --- Dried leaves ---
@@ -78,6 +93,7 @@ function stepHour(state, seed, pot, hourIndex, baseGrowthPerHour, frozen) {
     else if (state.water < comfort) growthFactor *= (state.water - need.minWater) / (comfort - need.minWater);
     growthFactor *= clamp(state.health, 0, 100) / 100;
     if (state.driedLeaves > DRIED_LEAVES_THRESHOLD) growthFactor *= 0.6;
+    if (state.rot > 0) growthFactor *= (1 - 0.5 * state.rot / 100); // rotten roots grow slower
   }
 
   if (state.growth < cap) {

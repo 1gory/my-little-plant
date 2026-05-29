@@ -2,7 +2,7 @@ import { loadState, saveState, defaultState } from './state.js';
 import { advance, isRootBound } from './engine.js';
 import { render, devFrozen } from './render.js';
 import { setTempUnit } from './settings.js';
-import { POT_TIERS, HOUR, WATER_PER_POUR } from './config.js';
+import { POT_TIERS, HOUR, WATER_PER_POUR, REPOT_ROT_RELIEF } from './config.js';
 
 const root = document.getElementById('app');
 let state;
@@ -101,6 +101,7 @@ root.addEventListener('click', async (e) => {
         if (s.phase === 'growing' && isRootBound(s) && s.potTier < POT_TIERS.length - 1) {
           s.potTier += 1;
           s.health = Math.min(100, s.health + 4);
+          s.rot = Math.max(0, (s.rot || 0) - REPOT_ROT_RELIEF); // fresh soil clears some rot
           s.timesRepotted = (s.timesRepotted || 0) + 1;
         }
       });

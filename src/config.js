@@ -11,7 +11,10 @@ export const GAME_DAYS = 30;
 export const BASE_GROWTH_PER_HOUR = 0.18;
 
 // Base water consumption (%) per hour. Modified by weather, pot, and seed.
-export const WATER_DECAY_PER_HOUR = 2.0;
+// Tuned so a single daily watering is comfortable for every plant (the
+// thirstiest, tomato, dries from a full pot to wilting in ~35h of clear weather);
+// drought-tolerant plants (sunflower) can go 2-3 days.
+export const WATER_DECAY_PER_HOUR = 1.0;
 
 // How much moisture a single "Water" tap adds. A small portion to
 // dose moisture more precisely (a full pot from the start is about 3-4 waterings).
@@ -32,6 +35,18 @@ export const DRIED_LEAVES_THRESHOLD = 3;
 // If water is below the seed's threshold, growth stops and health drops.
 // Health fatigue/recovery multipliers.
 export const HEALTH_RECOVER_PER_HOUR = 0.5;
+
+// --- Overwatering -> root rot ---
+// Above this moisture (%) the soil counts as waterlogged ("a swamp").
+export const OVERWATER_THRESHOLD = 85;
+// Root rot (0..100) gained per hour in waterlogged soil, scaled by seed.overwaterSens.
+export const ROT_PER_HOUR = 0.9;
+// Root rot lost per hour once the soil dries below the threshold (drying heals it slowly).
+export const ROT_DRY_RECOVER = 0.6;
+// Health lost per hour from rot, scaled by current rot (at rot=100 -> this many /h).
+export const ROT_HEALTH_PENALTY = 1.5;
+// Repotting into fresh soil clears this much rot at once.
+export const REPOT_ROT_RELIEF = 40;
 
 // Maximum hours we simulate in a single pass (protection against hangs
 // after a very long absence).

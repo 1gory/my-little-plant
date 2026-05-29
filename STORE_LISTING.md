@@ -101,40 +101,37 @@ reads best) rather than stretching it.
 | 2 | Seed selection — the four seed cards with their hint descriptions | Shows the "what will it be?" hook |
 | 3 | Pot selection — the four pots | Shows customization / depth |
 | 4 | A care moment — e.g. the "repot" prompt highlighted, or low water with the watering hint | Shows the gameplay loop |
-| 5 | The finale — the win screen revealing the plant name and day count | Shows the payoff |
+
+> The finale (win screen revealing the plant name) is **deliberately NOT a
+> screenshot** — the plant's identity is a reveal, and a store screenshot would
+> spoil it. The shipped set is 4 shots (`images/screenshots/screenshot_1280x800_1..4.jpg`).
 
 Tip: Screenshots 1 and 2 carry the listing. Make sure `DEV` is `false`
-before shooting — the dev time-warp buttons must not appear in any screenshot.
+before shooting — the dev time-warp buttons must not appear in any screenshot
+(building via `tools/pack.sh` keeps `DEV` honest, but screenshots are shot separately).
 
 ### Small promo tile (optional but recommended)
 
-A 440×280 tile (`images/screenshots/screenshot_440x280_1.jpg`) helps the listing
-stand out in category browsing. Use the plant + pot on a clean background.
+✅ Done: **`images/promo/tile_440x280.png`** — cozy pixel-art key art (pot + happy
+sprout mascot on a sunny windowsill) with the "My Little Plant" title set in the
+game's Jersey 25 font. Source art in `images/promo/_raw/`. Upload it under the
+Promo tile field to help the listing stand out in category browsing.
 
 ---
 
 ## Packaging (ZIP for Chrome Web Store)
 
 Run from the repo root. The ZIP must contain only the files the extension
-needs at runtime.
+needs at runtime — `tools/pack.sh` enforces that (whitelist + self-check), so
+just run it instead of hand-writing a `zip` command:
 
 ```bash
-VERSION=$(grep '"version"' manifest.json | head -1 | sed 's/.*"\([0-9.]*\)".*/\1/')
-zip -r my-little-plant-v${VERSION}.zip \
-  manifest.json \
-  popup.html \
-  styles.css \
-  src/ \
-  icons/ \
-  fonts/ \
-  LICENSE \
-  -x 'icons/icon.png' -x 'icons/*/_raw/*' -x '*.DS_Store'
+bash tools/pack.sh
 ```
 
-Verify the contents:
-```bash
-unzip -l my-little-plant-v${VERSION}.zip
-```
+It refuses to run with `DEV = true`, adds only the whitelisted runtime files
+(so docs, tools, `_raw/` sheets and stray files can't leak in), and verifies
+the result. The table below documents *what* that whitelist is and why.
 
 ### What's included
 | Path | Why |
@@ -155,16 +152,16 @@ unzip -l my-little-plant-v${VERSION}.zip
 | `package.json` / `package-lock.json` | Dev tooling only |
 | `docs/` | GitHub Pages landing — lives on the repo, not in the extension |
 | `images/` | Store screenshots + `icon-master.png` — upload screenshots separately in the dashboard |
-| `icons/icon.png` | The 450×450 master the icons are sliced from — source art, not a runtime asset (the `-x` flag drops it) |
+| `icons/*/_raw/` | Source sheets the icons are sliced from (incl. the 450px app-icon master in `icons/ui/_raw/`) — source art, not runtime assets (the `-x 'icons/*/_raw/*'` flag drops them) |
 | `.git/`, `.idea/`, `.claude/` | Dev metadata |
 | `*.md` (README, STORE_LISTING, RELEASE, PRIVACY_POLICY, DECISIONS, DESIGN-PROMPT…) | Docs, not part of the extension |
 | `.DS_Store` | macOS metadata (the `-x` flag drops it) |
 
 > ⚠️ Audit `icons/` before zipping. It must ship `icon16/48/128.png` and
-> the `icons/weather/*.png` set (those are loaded at runtime). The only thing in
-> `icons/` that must NOT ship is the `icon.png` master — the `-x 'icons/icon.png'`
-> flag handles that. After zipping, confirm with `unzip -l`: weather PNGs present,
-> `icon.png` absent.
+> the `icons/weather/*.png` set (those are loaded at runtime). The `_raw/` source
+> sheets (incl. the app-icon master in `icons/ui/_raw/`) must NOT ship — the
+> `-x 'icons/*/_raw/*'` flag handles that. After zipping, confirm with `unzip -l`:
+> weather PNGs present, no `_raw/` paths.
 
 ---
 
@@ -178,7 +175,7 @@ version of the things that have actually bitten this kind of project:
 - [ ] No `console.log` left in `src/*.js`
 - [ ] All icon files present: `icon16.png`, `icon48.png`, `icon128.png`
 - [ ] `fonts/` and `icons/weather/` are inside the ZIP (font + weather icons load
-      at runtime); `icons/icon.png` master is not
+      at runtime); the `icons/*/_raw/` source sheets are not
 - [ ] ZIP contains only the files listed above (and not `src/config.js`
       with `DEV = true`)
 - [ ] Screenshots taken with `DEV = false`, uploaded (at least #1 and #2)

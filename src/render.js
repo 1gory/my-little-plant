@@ -2,7 +2,7 @@ import { SEEDS, POTS, getSeed, getPot, WATER_NEED } from './data.js';
 import { WEATHER, weatherAt } from './weather.js';
 import { plantSVG } from './plant-svg.js';
 import { isRootBound, gameDay } from './engine.js';
-import { HOUR, DAY, DEV, POT_TIERS } from './config.js';
+import { HOUR, DAY, DEV, POT_TIERS, OVERWATER_THRESHOLD } from './config.js';
 import { getTempUnit, formatTemp } from './settings.js';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -17,6 +17,11 @@ function weatherIcon(w, cls) {
 // Stat-bar icon (growth/moisture/health) — pixel-art PNG from icons/ui/.
 function statImg(name) {
   return `<img class="stat-ico-img" src="icons/ui/${name}.png" alt="">`;
+}
+
+// Inline pixel glyph next to text (replaces the old emoji: sprout/bloom/celebrate/wilt).
+function glyph(name) {
+  return `<img class="tglyph" src="icons/ui/${name}.png" alt="">`;
 }
 
 export function render(state, now = Date.now(), opts = {}) {
@@ -63,7 +68,7 @@ function choosePot(state) {
   ).join('');
   return `
     <header class="head"><h1>Pick a pot</h1>
-    <p class="sub">Let's plant the seed 🌱</p></header>
+    <p class="sub">Let's plant the seed ${glyph('sprout')}</p></header>
     <div class="grid">${cards}</div>`;
 }
 
@@ -136,8 +141,13 @@ function growing(state, now) {
   }).join('');
 
   // Hint + plant mood (the icon in the badge depends on the state).
+  // Order = priority: the most urgent / most actionable thing first.
+  const waterlogged = state.water > OVERWATER_THRESHOLD;
   let hint = 'Growing along nicely', mood = 'happy';
-  if (rootBound) { hint = 'Roots are cramped — time to repot into a deeper pot!'; mood = 'repot'; }
+  if (state.rot > 35) { hint = 'Root rot! Stop watering — let the soil dry out, or repot into fresh soil'; mood = 'overwater'; }
+  else if (rootBound) { hint = 'Roots are cramped — time to repot into a deeper pot!'; mood = 'repot'; }
+  else if (state.rot > 8) { hint = 'Roots are rotting from too much water — let it dry out'; mood = 'overwater'; }
+  else if (waterlogged) { hint = 'The soil is waterlogged — ease off the watering'; mood = 'overwater'; }
   else if (state.water < dryThreshold) { hint = 'The soil is dry — water your plant'; mood = 'thirsty'; }
   else if (state.driedLeaves > 3) { hint = 'Too many dried leaves — trim them'; mood = 'unwell'; }
   else if (state.health < 40) { hint = 'Your plant is feeling poorly — take care of it'; mood = 'unwell'; }
@@ -171,7 +181,7 @@ function growing(state, now) {
     <div class="actions">
       <button class="act" data-action="water"><span class="act-ico"><img class="act-ico-img" src="icons/ui/droplet.png" alt=""></span><span class="act-label">Water</span></button>
       <button class="act" data-action="trim" ${state.driedLeaves > 0 ? '' : 'disabled'}><span class="act-ico"><img class="act-ico-img" src="icons/ui/scissors.png" alt=""></span><span class="act-label">Trim</span></button>
-      <button class="act ${canRepot ? 'highlight' : ''}" data-action="repot" ${canRepot ? '' : 'disabled'}><span class="act-ico">${pot?.icon ? `<img class="act-ico-img" src="${pot.icon}" alt="">` : '🪴'}</span><span class="act-label">Repot</span></button>
+      <button class="act ${canRepot ? 'highlight' : ''}" data-action="repot" ${canRepot ? '' : 'disabled'}><span class="act-ico">${pot?.icon ? `<img class="act-ico-img" src="${pot.icon}" alt="">` : ''}</span><span class="act-label">Repot</span></button>
     </div>
 
     ${DEV ? devBar() : ''}`;
@@ -186,7 +196,7 @@ function endScreen(state, win) {
   const facts = win && Array.isArray(seed?.facts) ? seed.facts : [];
   const factsHtml = facts.length
     ? `<div class="facts">
-        <div class="facts-title">🌼 Did you know?</div>
+        <div class="facts-title">${glyph('bloom')} Did you know?</div>
         <ul>${facts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>
       </div>`
     : '';
@@ -206,7 +216,7 @@ function endScreen(state, win) {
     </div>`;
   return `
     <header class="head">
-      <h1>${win ? 'Congratulations! 🎉' : 'Oh no… 🥀'}</h1>
+      <h1>${win ? `Congratulations! ${glyph('celebrate')}` : `Oh no… ${glyph('wilt')}`}</h1>
       <p class="sub">${win
         ? `You grew a <strong>${esc(plantName)}</strong> in ${day} day${day === 1 ? '' : 's'}.`
         : `Your <strong>${esc(plantName)}</strong> lived ${day} day${day === 1 ? '' : 's'}.<br>Better luck next time!`}</p>
@@ -214,7 +224,7 @@ function endScreen(state, win) {
     <div class="scene">${plantSVG({ growth: 100, driedLeaves: win ? 0 : 6, seed, pot, finished: win, withered: !win })}</div>
     ${statsHtml}
     ${factsHtml}
-    <div class="actions"><button class="act highlight wide" data-action="restart"><span>Plant again 🌱</span></button></div>`;
+    <div class="actions"><button class="act highlight wide" data-action="restart"><span>Plant again ${glyph('sprout')}</span></button></div>`;
 }
 
 function settingsScreen() {

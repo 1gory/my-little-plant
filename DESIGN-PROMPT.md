@@ -221,6 +221,88 @@ expression and a small symbol change. Left to right:
 
 > Если 6 много — минимум нужны happy / thirsty / rootbound / messy. sick и cold опциональны.
 
+### Что есть по факту + добор
+
+Нарезано 5: `happy, thirsty, repot, unwell, cold`. 4-й кадр оказался «мокрым ростком
+в луже» — он семантически = **перелив**, скопирован в `icons/status/overwater.png`
+и используется механикой root-rot. Из-за этого `unwell.png` сейчас = тот же мокрый
+кадр (дубль). Нужен **отдельный болезненный маскот** для состояния «сухие листья /
+низкое здоровье» (заменит `unwell.png`). Генерить одного, **со style-reference**
+текущего листа `_raw/_sheet.png`:
+
+```
+True pixel art of a SINGLE sad UNWELL sprout mascot in a tiny terracotta pot, transparent background, no text.
+HARD aliased pixel edges, NO anti-aliasing, NO blur, NO smooth gradients — flat color blocks, dithering only,
+crisp square pixels, soft (not harsh black) outline. The sprout looks sickly and droopy: drooping yellow-brown
+wilting leaves, a pale queasy unwell face, one or two dried brown leaves falling — clearly "feeling poorly"
+(NOT wet, NO water drops, NO puddle). Match the art style, pixel size, pot shape and outline of the reference.
+```
+
+> После нарезки положить в `icons/status/unwell.png` (перезаписав мокрый дубль).
+
+---
+
+## ПАЧКА 7 — Текстовые глифы вместо эмодзи (ряд из 4)
+
+Маленькие декоративные глифы рядом с текстом на экранах: подзаголовок «Let's
+plant the seed» и кнопка «Plant again» (росток), «Did you know?» на финале
+(цветок), заголовок победы (праздник) и заголовок гибели (увядший цветок).
+Заменяют инородные на пиксель-фоне эмодзи `🌱 / 🌼 / 🎉 / 🥀`. Показ ~20–24px.
+
+Порядок слева направо: **sprout, bloom, celebrate, wilt**
+
+```
+True pixel art sprite sheet: EXACTLY 4 small UI glyphs in one horizontal row. ONLY these icons,
+no text, no other objects. Highest possible resolution. HARD aliased pixel edges, NO anti-aliasing,
+NO blur, NO smooth gradients — flat color blocks, shading by dithering only. ONE single consistent
+pixel size / grid across the whole sheet, every pixel a crisp square. All 4 the SAME size, big even
+gaps, fully transparent background. Bold PLUMP readable shapes, soft muted low-contrast cottagecore
+colors, soft (not harsh black) outline. Match the art style and pixel size of the reference image.
+Left to right:
+1) SPROUT: a fresh little green sprout with two small leaves rising from a tiny soil mound,
+   cheerful and upright, leaf greens (#5d9c4a / #4a7d3b), small brown soil base (#7b3f1e);
+2) BLOOM: a single cheerful daisy-like flower seen from the front — rounded white-cream petals
+   (#f3f0e7) around a warm golden-yellow center (#e0b43c), tiny green leaf at the side;
+3) CELEBRATE: a small festive party-popper cone (terracotta-orange #e08a3c) with a little burst of
+   confetti and two sparkles above it, warm cozy colors (green/yellow/coral), joyful;
+4) WILT: a single drooping wilted flower head bowing on a bent stem, faded muted coral petals
+   (#e05a6a desaturated) with one petal falling, a small limp green leaf — sad but gentle.
+```
+
+> Для `🌱` есть и готовый вариант — бар-иконка `icons/ui/growth.png` (тот же росток
+> с двумя листьями). Если новый sprout не нужен, можно переиспользовать её.
+> Имена после нарезки: `icons/ui/{sprout,bloom,celebrate,wilt}.png`.
+>
+> ✅ **Сделано:** лист сгенерён и нарезан в `icons/ui/{sprout,bloom,celebrate,wilt}.png`
+> (исходник — `icons/ui/_raw/glyphs-sheet.png`), подключён через `glyph()` в
+> `render.js` (класс `.tglyph`). Все эмодзи из UI убраны.
+
+---
+
+## ПАЧКА 8 — Промо-тайл листинга (Small promo tile 440×280)
+
+Одно цельное key-art изображение (НЕ прозрачный спрайт, с фоном) для Chrome Web
+Store. Генерить **без текста** (оставить левую треть пустой под заголовок),
+заголовок «My Little Plant» наложу отдельно шрифтом `fonts/Jersey25.ttf`.
+Style-reference — `art.png` или готовые иконки. После — crop/resize к ровно
+440×280, положить в `images/` (напр. `images/promo/tile_440x280.png`).
+
+```
+Cozy cottagecore PIXEL-ART promo banner / key art, LANDSCAPE ~11:7 aspect ratio (for a 440x280
+Chrome Web Store tile), for a calm browser game called "My Little Plant".
+HARD aliased pixel edges, NO anti-aliasing, NO blur, NO smooth gradients — flat color blocks,
+shading by DITHERING only, crisp square pixels of one consistent size, bold SOFT (not harsh black) outline.
+Warm cozy palette: cream background #f3f0e7, leaf greens #5d9c4a / #4a7d3b, terracotta-orange pot
+#e08a3c, soft sky-blue #4aa3d8 accents, gentle golden sunlight.
+Scene: a single charming terracotta pot with a thriving healthy green plant — a cute happy SPROUT
+MASCOT with a tiny smiling face nestled among the leaves — sitting on a wooden windowsill, soft warm
+sunlight glowing through a cozy window behind it, a few tiny floating sparkles and one small water
+droplet. Storybook, welcoming, cozy mood.
+IMPORTANT: keep the LEFT THIRD calmer and emptier as clear space for a title to be added later.
+NO text, no letters, no logo, no UI elements — just the cozy illustration. Fully filled background
+(not transparent). Highest possible resolution.
+```
+
 ---
 
 ## Спрайт-лист стадий роста (отдельная задача, позже)

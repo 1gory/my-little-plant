@@ -68,6 +68,7 @@ export function defaultState() {
     health: 100,
     driedLeaves: 0,
     _driedProgress: 0,
+    rot: 0,            // root rot from overwatering (0..100); new field, old saves get 0
     lowHealthHours: 0,
     lastWeather: 'sunny',
     weatherSeed: Math.floor(Math.random() * 0xffffffff),

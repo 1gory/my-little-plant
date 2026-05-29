@@ -123,36 +123,26 @@ The landing page is served from `docs/` on `main` (Settings → Pages → `main`
 - [ ] Push: `git push && git push --tags`
 
 ### 9. Build ZIP
-Run from the repo root.
+Run from the repo root:
 
 ```bash
-VERSION=$(grep '"version"' manifest.json | head -1 | sed 's/.*"\([0-9.]*\)".*/\1/')
-zip -r my-little-plant-v${VERSION}.zip \
-  manifest.json \
-  popup.html \
-  styles.css \
-  src/ \
-  icons/ \
-  fonts/ \
-  LICENSE \
-  -x 'icons/icon.png' -x 'icons/*/_raw/*' -x '*.DS_Store'
+bash tools/pack.sh
 ```
 
-Verify the contents — re-verify the DEV flag, and confirm the runtime assets are in:
-```bash
-unzip -l my-little-plant-v${VERSION}.zip
-unzip -p my-little-plant-v${VERSION}.zip src/config.js | grep "DEV = "   # must say false
-unzip -l my-little-plant-v${VERSION}.zip | grep -E 'fonts/|icons/weather/'  # must be present
-unzip -l my-little-plant-v${VERSION}.zip | grep 'icons/icon.png'           # must be EMPTY
-```
+This is the **single source of truth for packaging** — don't hand-write `zip`
+commands. It refuses to run if `DEV = true`, ships a whitelist of only the
+runtime files (docs, `tools/`, `images/`, `_raw/` sheets, `*.md` and any stray
+`_*` harness can't leak in — they're simply not on the list), and self-verifies
+(DEV false inside, no `_raw`/reserved/docs, font + weather + icon present). It
+prints `[OK] my-little-plant-v<version>.zip — N files …` or fails loudly.
 
 **Must be inside:** `fonts/Jersey25.ttf` (font loads via `@font-face`) and
 `icons/weather/*.png` (loaded at runtime by `weather.js`). If either is missing,
 the published extension silently falls back (system font / broken weather icons).
 
 **Must NOT be inside:** `node_modules/`, `package.json`, `package-lock.json`,
-`docs/`, `images/`, `tools/`, `icons/seeds/_raw/` (source sheets — heavy),
-`icons/icon.png` (the 450px master), `.git/`, `.idea/`, `.claude/`,
+`docs/`, `images/`, `tools/`, `icons/*/_raw/` (source sheets — heavy, incl. the
+450px app-icon master in `icons/ui/_raw/`), `.git/`, `.idea/`, `.claude/`,
 any `*.md`, `*.mjs`, `.DS_Store`.
 
 ### 10. Chrome Web Store dashboard
