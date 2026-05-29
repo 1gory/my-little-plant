@@ -184,12 +184,16 @@ body {
 
 .hint {
   border-image-source: url(icons/ui/frame-hint.png?v6);
-  font-size: 13px; color: var(--green-d);
-  padding: 0 11px; margin: 6px 0;
-  /* icon on the left, text on the left — as in the concept */
-  display: flex; align-items: center; justify-content: flex-start; gap: 10px; text-align: left;
+  font-size: 13px; color: var(--green-d); line-height: 1.3;
+  /* Match the stat rows' padding/gap so the icon and text line up with the
+     stat column (icon 22px slot, 6px inset, 9px gap). */
+  padding: 0 6px; margin: 6px 0;
+  /* Fixed height that fits two lines (border-box includes the 8px frame), so the
+     badge keeps the same height whether the hint is one line or wraps to two. */
+  min-height: 52px; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: flex-start; gap: 9px; text-align: left;
 }
-.hint-ico { flex: none; width: 34px; height: 34px; object-fit: contain; image-rendering: pixelated; }
+.hint-ico { flex: none; width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; }
 .hint span { flex: 1; }
 .gear-img { display: block; width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; }
 
