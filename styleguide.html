@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Little Plant — Экран роста: рендер vs концепт</title>
+
+  <link rel="preload" href="fonts/Jersey25.ttf" as="font" type="font/ttf" crossorigin>
+
+  <!-- Реальный CSS приложения. Анти-кэш: всегда свежий styles.css. -->
+  <meta http-equiv="Cache-Control" content="no-store">
+  <script>document.write('<link rel="stylesheet" href="styles.css?t=' + Date.now() + '">');</script>
+  <noscript><link rel="stylesheet" href="styles.css"></noscript>
+
+  <style>
+    body { width: auto !important; background: #ece6da; margin: 0; }
+    .sg-wrap { max-width: 760px; margin: 0 auto; padding: 28px 24px 60px; }
+    .sg-title { font-family: var(--pixel); font-size: 22px; font-weight: 700; color: #2f2a20; margin: 0 0 18px; }
+    .sg-2col { display: grid; grid-template-columns: 340px 340px; gap: 28px; align-items: start; }
+    .popup { width: 340px; background: #fffaf2; border: 1px solid #cdbf9f; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.12); overflow: hidden; }
+    .sg-ref img { width: 340px; display: block; border: 1px solid #cdbf9f; border-radius: 14px; }
+    .sg-cap { font-family: var(--pixel); font-size: 13px; color: #6b6450; text-align: center; margin-top: 8px; }
+  </style>
+</head>
+<body>
+<div class="sg-wrap">
+  <h1 class="sg-title">Экран роста: рендер vs концепт</h1>
+
+  <div class="sg-2col">
+    <!-- НАШ РЕНДЕР (реальные классы из styles.css) -->
+    <div>
+      <div class="popup"><div class="app">
+        <header class="head growing-head">
+          <div class="weather-bar">
+            <div class="weather-now"><img class="w-icon w-head" src="icons/weather/sunny.png" alt=""><span class="temp num">24°C</span></div>
+            <span class="wbar-divider"></span>
+            <div class="forecast-strip">
+              <div class="fc-day"><span class="fc-wd">Tue</span><img class="w-icon fc-icon" src="icons/weather/sunny.png" alt=""></div>
+              <div class="fc-day"><span class="fc-wd">Wed</span><img class="w-icon fc-icon" src="icons/weather/rain.png" alt=""></div>
+              <div class="fc-day"><span class="fc-wd">Thu</span><img class="w-icon fc-icon" src="icons/weather/partly-cloudy.png" alt=""></div>
+            </div>
+            <button class="gear" aria-label="Settings"><span class="gear-ico"><img class="gear-img" src="icons/ui/gear.png" alt=""></span></button>
+          </div>
+        </header>
+        <div class="scene" id="sg-scene"></div>
+        <div class="stat"><span class="stat-ico"><img class="stat-ico-img" src="icons/ui/growth.png" alt=""></span><div class="stat-body"><div class="stat-top"><span>Growth</span><span><span class="stat-note">Day 12</span>47%</span></div><div class="bar"><div class="bar-fill growth" style="width:47%"></div></div></div></div>
+        <div class="stat"><span class="stat-ico"><img class="stat-ico-img" src="icons/ui/droplet.png" alt=""></span><div class="stat-body"><div class="stat-top"><span>Soil moisture</span></div><div class="moisture"><div class="moisture-track"><div class="moisture-grad"></div><div class="moisture-marker" style="left:50%"></div></div></div></div></div>
+        <div class="stat"><span class="stat-ico"><img class="stat-ico-img" src="icons/ui/heart.png" alt=""></span><div class="stat-body"><div class="stat-top"><span>Health</span></div><div class="bar"><div class="bar-fill health" style="width:88%"></div></div></div></div>
+        <p class="hint"><img class="hint-ico" src="icons/status/happy.png" alt=""><span>Looks happy! Keep the soil moist and it will thrive.</span></p>
+        <div class="actions">
+          <button class="act" data-action="water"><span class="act-ico"><img class="act-ico-img" src="icons/ui/droplet.png" alt=""></span><span class="act-label">Water</span></button>
+          <button class="act" data-action="trim" disabled><span class="act-ico"><img class="act-ico-img" src="icons/ui/scissors.png" alt=""></span><span class="act-label">Trim</span></button>
+          <button class="act highlight" data-action="repot"><span class="act-ico"><img class="act-ico-img" src="icons/pots/terracotta.png" alt=""></span><span class="act-label">Repot</span></button>
+        </div>
+      </div></div>
+      <p class="sg-cap">наш рендер</p>
+    </div>
+
+    <!-- КОНЦЕПТ -->
+    <div class="sg-ref">
+      <img src="art.png" alt="concept">
+      <p class="sg-cap">концепт art.png</p>
+    </div>
+  </div>
+</div>
+
+<!-- Настоящий plantSVG в сцену (модули без зависимостей грузятся напрямую) -->
+<script type="module">
+  import { plantSVG } from './src/plant-svg.js';
+  import { getSeed, getPot } from './src/data.js';
+  const seed = getSeed('sunflower');
+  const pot = getPot('terracotta');
+  const el = document.getElementById('sg-scene');
+  if (el) el.innerHTML = plantSVG({ growth: 55, driedLeaves: 1, seed, pot });
+</script>
+</body>
+</html>

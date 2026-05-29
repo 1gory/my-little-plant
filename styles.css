@@ -1,0 +1,266 @@
+/* ── Шрифт: Jersey 25 (OFL), встроен локально в fonts/ ─────────────────
+   Без сетевых запросов — соответствует privacy policy расширения.
+   Один файл на весь диапазон весов (100–900): у пиксель-шрифта нет болда,
+   синтетического утолщения не делаем — иерархия задаётся размером. */
+@font-face {
+  font-family: "Jersey 25";
+  src: url("fonts/Jersey25.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
+:root {
+  --bg: #f3f0e7;
+  --card: #ffffff;
+  --ink: #2f2a20;
+  --muted: #6b6450;       /* темнее — описания были слишком бледными на фоне */
+  --green: #5d9c4a;
+  --green-d: #4a7d3b;
+  --accent: #e08a3c;
+  --accent-d: #c8762e;
+  --line: #eeddc9;        /* светлый песочный контур рамок */
+  --water: #4aa3d8;
+  --health: #e05a6a;
+  --pixel: "Jersey 25", ui-monospace, "Courier New", monospace;
+  --pixel-mono: "Jersey 25", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  width: 340px;
+  font-family: var(--pixel);
+  font-size: 15px;          /* размер подобран под x-height Jersey 25 */
+  line-height: 1.4;
+  color: var(--ink);
+  background: #fffaf2;
+  /* Сглаживание включено: с antialiased пиксельный контур плотнее и чище
+     на не-кратных пиксельной сетке размерах. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Цифры/значения — моноширинным пиксельным, чтобы не «прыгали» */
+.num, .seed-days, .stat-top span:last-child { font-family: var(--pixel-mono); }
+
+.app { padding: 11px; min-height: 200px; }
+
+/* ─────────────────────────────────────────────────────────────
+   ПИКСЕЛЬНАЯ РАМКА (общий каркас)
+   Реализована через border-image 9-slice: PNG-фрейм icons/ui/frame-sand.png
+   (radius 8, линия 1px #eeddc9, заливка-фон #fffaf2) растягивается по краям,
+   `fill` рисует середину как фон. Скруглённые пиксельные углы — в самой картинке.
+   background: transparent — иначе сквозь прозрачные углы PNG проступал бы квадрат
+   дефолтного фона кнопки. Цветные/спец-варианты переопределяют border-image-source.
+   ───────────────────────────────────────────────────────────── */
+.scene, .card, .act, .hint, .set-row, .weather-bar, .stat, .facts {
+  position: relative;
+  border: 8px solid transparent;
+  border-image: url(icons/ui/frame-sand.png?v8) 8 fill / 8px stretch;
+  image-rendering: pixelated;
+  border-radius: 0;
+  /* без дефолтного квадратного фона кнопки — заливку даёт только рамка-картинка,
+     иначе сквозь прозрачные скруглённые углы PNG проступает квадрат */
+  background: transparent;
+}
+
+/* Заголовки */
+.head { text-align: center; margin-bottom: 12px; }
+.head h1 { font-size: 22px; font-weight: 700; margin: 0 0 4px; letter-spacing: .5px; }
+.sub { font-size: 14px; color: var(--muted); margin: 0; }
+
+/* Шапка экрана роста — без рамки/фона, сидит прямо на фоне (как в концепте):
+   крупная погода+температура слева, прогноз справа, шестерёнка */
+.growing-head {
+  display: flex; justify-content: space-between; align-items: center;
+  background: transparent; border: none;
+  border-radius: 0; padding: 2px 2px 0; margin-bottom: 6px; text-align: left;
+}
+/* Вся верхняя плашка — одна рамка на всю ширину; внутри вертикальный разделитель
+   и прижатая вправо шестерёнка */
+/* Та же рамка frame-sand (радиус 8), что у всех — из общего селектора, без оверрайда */
+.weather-bar { display: flex; align-items: center; flex: 1; }
+.weather-now { display: flex; align-items: center; gap: 7px; padding: 1px 6px; }
+.weather-now .temp { font-size: 18px; font-weight: 700; }
+
+/* Разделитель: тонкая короткая черта, с воздухом слева/справа (margin),
+   по вертикали не достаёт до краёв рамки */
+.wbar-divider { width: 1px; align-self: stretch; margin: 3px 10px; background: var(--line); }
+
+/* Прогноз занимает правую половину и раскидывает дни равномерно (как в концепте) */
+.forecast-strip { display: flex; flex: 1; align-items: center; justify-content: space-evenly; padding: 1px 4px; }
+.fc-day { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.fc-wd { font-size: 11px; color: var(--muted); letter-spacing: .3px; }
+
+/* Шестерёнка живёт внутри общей рамки, прижата вправо. Крутится только иконка. */
+.gear {
+  flex: none; cursor: pointer; color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1px 6px; border: none; background: transparent; transition: color .12s;
+}
+.gear-ico { font-size: 20px; line-height: 1; display: block; transition: transform .25s; }
+.gear:hover { color: var(--ink); }
+.gear:hover .gear-ico { transform: rotate(45deg); }
+
+/* Пиксель-арт иконки погоды — без сглаживания при масштабировании.
+   Солнце в шапке заметно крупнее иконок прогноза (как в концепте). */
+.w-icon { image-rendering: pixelated; display: block; }
+.w-icon.w-head { width: 30px; height: 30px; }
+.w-icon.fc-icon { width: 23px; height: 23px; }
+
+/* Сетка карточек выбора */
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.card {
+  padding: 12px 10px; cursor: pointer; text-align: center; font: inherit;
+  color: inherit;
+  display: flex; flex-direction: column; gap: 6px;
+}
+/* Ховер — зелёная рамка-картинка, без сдвига, чтобы иконки не дёргались */
+.card:hover { border-image-source: url(icons/ui/frame-green.png?v5); }
+.card-name { font-weight: 700; font-size: 15px; }
+.card-desc { font-size: 13px; color: var(--muted); line-height: 1.35; }
+.pot-img-wrap { display: flex; align-items: flex-end; justify-content: center; height: 84px; }
+.pot-img { display: block; height: 76px; width: auto; object-fit: contain; }
+
+/* Семечка в карточке: фикс-высота, разные размеры стоят на общей «земле» */
+.seed-img-wrap { display: flex; align-items: flex-end; justify-content: center; height: 100px; }
+.seed-img { display: block; object-fit: contain; object-position: center bottom; }
+.seed-days { font-size: 14px; font-weight: 700; color: var(--green-d); }
+/* Подстройка вертикали глифа ~ под цифры (зависит от метрик шрифта) */
+.seed-days .approx { display: inline-block; position: relative; top: 0; }
+
+/* Сцена. Фон над столом = фон приложения (#fffaf2, запечён в рамку). Стол — это
+   ТОЛСТЫЙ НИЖНИЙ БОРДЮР рамки (border-width снизу 32px, нижний слайс frame-scene.png
+   = стол #f3e8cf со скруглёнными нижними углами + 1px тёмная кромка и микроградиент).
+   Стол доходит до боковых линий и углов без шва. overflow НЕ hidden — низ растения
+   (горшок) рисуется ПОВЕРХ стола через translateY, иначе срезается по content-box. */
+.scene {
+  border-width: 8px 8px 32px 8px;
+  border-image: url(icons/ui/frame-scene.png?v15) 8 8 24 8 fill / 8px 8px 32px 8px stretch;
+  margin: 5px 0; display: flex; justify-content: center; align-items: flex-end;
+  position: relative;
+}
+/* translateY опускает горшок на стол ВИЗУАЛЬНО (не меняя высоту раскладки).
+   overflow у .scene НЕ hidden — низ растения рисуется ПОВЕРХ стола (z-index выше
+   бордюра-стола), иначе горшок срезается по линии content-box. */
+.plant-svg { position: relative; z-index: 1; width: 170px; height: 172px; display: block; transform: translateY(24px); image-rendering: pixelated; }
+
+
+/* Полоски статов */
+/* Стат-строка целиком в пиксельной рамке (иконка + подпись + полоска).
+   Рамка — та же frame-sand (радиус 8), что у сцены/карточек/кнопок: одинаковый угол. */
+.stat {
+  display: flex; align-items: center; gap: 9px; margin: 5px 0; padding: 0 6px;
+}
+.stat-ico { flex: none; width: 22px; text-align: center; font-size: 20px; line-height: 1; }
+.stat-ico-img { display: block; width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; }
+.stat-body { flex: 1; min-width: 0; }
+.stat-top { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 1px; }
+/* Полоски — простые «таблетки» (рамка теперь на всём стат-элементе, не на треке) */
+.bar { height: 11px; background: #e8dfca; border-radius: 999px; overflow: hidden; box-shadow: inset 0 1px 1px rgba(0,0,0,.05); }
+.bar-fill { height: 100%; border-radius: 999px; transition: width .3s ease; }
+.bar-fill.growth { background: linear-gradient(90deg, #7cc35e, var(--green-d)); }
+.bar-fill.health { background: linear-gradient(90deg, #f08a96, var(--health)); }
+
+/* Влажность почвы: «таблетка» с градиентом сухо↔мокро и едущим маркером */
+.moisture { display: flex; align-items: center; }
+.moisture-track { position: relative; flex: 1; height: 11px; box-shadow: inset 0 1px 2px rgba(0,0,0,.12); }
+.moisture-grad {
+  position: absolute; inset: 0; border-radius: 999px;
+  background: linear-gradient(90deg, #cda878 0%, #b9c79a 45%, #6fc2e6 100%);
+}
+/* Маркер влажности — пиксельная булавка (PNG), кончик указывает на уровень */
+.moisture-marker {
+  position: absolute; top: 50%; width: 14px; height: 19px;
+  background: url(icons/ui/water-marker.png) center/contain no-repeat;
+  image-rendering: pixelated;
+  transform: translate(-50%, -50%); transition: left .8s ease; z-index: 2;
+}
+
+/* «Day N» рядом с процентом роста — приглушённо */
+.stat-note { color: var(--muted); font-weight: 400; margin-right: 8px; }
+
+.hint {
+  border-image-source: url(icons/ui/frame-hint.png?v6);
+  font-size: 13px; color: var(--green-d);
+  padding: 0 11px; margin: 6px 0;
+  /* иконка слева, текст слева — как в концепте */
+  display: flex; align-items: center; justify-content: flex-start; gap: 10px; text-align: left;
+}
+.hint-ico { flex: none; width: 34px; height: 34px; object-fit: contain; image-rendering: pixelated; }
+.hint span { flex: 1; }
+.gear-img { display: block; width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; }
+
+/* Кнопки действий — карточки «иконка сверху, подпись снизу» (как в макете) */
+.actions { display: flex; gap: 8px; }
+.act {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 2px 6px; font: inherit; font-size: 13px; font-weight: 700;
+  color: var(--ink); cursor: pointer;
+  transition: transform .06s;
+}
+/* Фикс-высота области иконки: иконки разного размера «стоят» на общей линии,
+   подписи кнопок выходят на один уровень */
+.act-ico { height: 27px; display: flex; align-items: flex-end; justify-content: center; font-size: 22px; line-height: 1; position: relative; }
+.act-ico-img { display: block; height: 22px; width: auto; object-fit: contain; image-rendering: pixelated; }
+/* Горшок в Repot крупнее прочих иконок кнопок (как в концепте) */
+.act[data-action="repot"] .act-ico-img { height: 27px; }
+/* Тень под горшком на кнопке Repot — овал у основания, рисуется ПОД картинкой */
+.act[data-action="repot"] .act-ico::before {
+  content: ''; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: 80%; height: 5px; border-radius: 50%;
+  background: rgba(60, 40, 20, .28); filter: blur(1.5px);
+}
+.act-label { letter-spacing: .3px; }
+
+/* Блок «интересные факты» на финале */
+.facts { padding: 4px 12px 6px; text-align: left; font-size: 13px; color: var(--ink); margin: 4px 0 8px; }
+.facts-title { font-weight: 700; color: var(--green-d); margin-bottom: 3px; }
+.facts ul { margin: 0; padding-left: 18px; }
+.facts li { margin: 3px 0; line-height: 1.35; }
+.act:hover:not(:disabled) { border-image-source: url(icons/ui/frame-green.png?v5); }
+.act:active:not(:disabled) { transform: translateY(2px); }
+.act:disabled { opacity: .4; cursor: default; }
+
+/* Активная Repot: выглядит ровно как другие кнопки — та же песочная рамка,
+   без подсветки/пульсации (фон не должен отличаться). */
+.act.highlight {
+  color: var(--ink);
+}
+/* Финальная «Plant again» — акцентная оранжевая, чистая: белый текст, без
+   inset-блеска (он квадратил скруглённые углы) и без пульсации. */
+.act.highlight.wide {
+  border-image-source: url(icons/ui/frame-orange.png?v5);
+  color: #fff;
+}
+.act.highlight.wide:hover:not(:disabled) { border-image-source: url(icons/ui/frame-orange.png?v5); filter: brightness(1.05); }
+.act.wide { flex: none; width: 100%; flex-direction: row; justify-content: center; gap: 8px; padding: 11px; }
+
+
+/* Экран настроек */
+.settings { margin: 6px 0 14px; }
+.set-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; margin-bottom: 10px;
+}
+.set-label { font-size: 15px; font-weight: 700; }
+.segmented { display: flex; border: 2px solid var(--line); border-radius: 10px; overflow: hidden; }
+.seg {
+  font: inherit; font-size: 15px; font-weight: 700; padding: 6px 14px;
+  border: none; background: var(--card); color: var(--muted); cursor: pointer;
+  transition: background .12s, color .12s;
+}
+.seg + .seg { border-left: 2px solid var(--line); }
+.seg.active { background: var(--green); color: #fff; }
+.seg:hover:not(.active) { background: #faf6ec; color: var(--ink); }
+
+/* dev-панель */
+.dev { margin-top: 12px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.dev button {
+  font: inherit; font-size: 13px; padding: 3px 8px; border: 1px dashed var(--line);
+  background: transparent; border-radius: 8px; cursor: pointer; color: var(--muted);
+}
+.dev button:hover { background: #ece5d4; }
+.dev-freeze { display: flex; align-items: center; gap: 4px; cursor: pointer; color: var(--muted); font-size: 13px; }

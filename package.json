@@ -1,0 +1,12 @@
+{
+  "name": "my-little-plant",
+  "version": "1.0.0",
+  "description": "A cozy month-long plant-growing tamagotchi that lives in a browser popup.",
+  "type": "module",
+  "author": "Igor Pershin <igor.pershin.me@gmail.com>",
+  "homepage": "https://github.com/1gory/my-little-plant",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"No tests yet\" && exit 0"
+  }
+}
