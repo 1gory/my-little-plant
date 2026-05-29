@@ -120,8 +120,8 @@ and warns about dev-only folders that must not ship.
 - [x] Copy the live listing URL and add it to:
   - [x] `README.md` (badge + the "From the Chrome Web Store" line)
   - [x] `docs/index.html` (store badge in the header, URL filled in)
-- [ ] Create the matching **GitHub Release** (`RELEASE.md` step 11) with the ZIP
-      attached
+- [x] Create the matching **GitHub Release** (`RELEASE.md` step 11) with the ZIP
+      attached — done: tag `v1.0.0`, latest, `my-little-plant-v1.0.0.zip` attached
 - [ ] Install the live version and play one full loop to confirm
 
 ---

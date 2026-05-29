@@ -65,9 +65,9 @@ Web Store (`nmfppnlojcllbcokdpbcfaofhdbckoaa`); ближайшая цель — 
 
 - [x] **GitHub repo + Pages** — ✅ залито (`github.com/1gory/my-little-plant`),
       Pages отдаёт лендинг + privacy-policy; стор-листинг ссылается на него.
-- [ ] **GitHub Release v1.0.0** — создать релиз с прикреплённым
-      `my-little-plant-v1.0.0.zip` (см. `RELEASE.md`, шаг 11), чтобы работала
-      ручная установка по ссылке на Releases из README.
+- [x] **GitHub Release v1.0.0** — ✅ создан (тег `v1.0.0`, latest) с
+      прикреплённым `my-little-plant-v1.0.0.zip`; ссылка на Releases из README
+      теперь рабочая.
 - [x] **Удалить `my-little-plant-v1.0.0.zip` из рабочей папки** — ✅ удалён
       (пересобирается по `RELEASE.md` перед патчем).
 
