@@ -125,6 +125,17 @@ root.addEventListener('click', async (e) => {
       draw();
       break;
 
+    // Same fresh start as 'restart', but reachable mid-game from Settings -
+    // so confirm first, the player has a living plant to lose.
+    case 'start-over':
+      if (confirm('Start a new plant? Your current plant and all its progress will be lost.')) {
+        state = defaultState();
+        view = null;
+        await saveState(state);
+        draw();
+      }
+      break;
+
     case 'ff': {
       const hrs = Number(btn.dataset.h) || 0;
       state.startedAt -= hrs * HOUR;

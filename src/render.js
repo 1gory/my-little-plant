@@ -213,7 +213,15 @@ function settingsScreen() {
         <span class="set-label">Temperature</span>
         <div class="segmented">${seg('C', '°C')}${seg('F', '°F')}</div>
       </div>
+      <div class="set-row">
+        <span class="set-label">Start over</span>
+        <div class="segmented"><button class="seg danger" data-action="start-over">New plant</button></div>
+      </div>
     </div>
+    <p class="set-feedback">
+      Got an idea to improve this or found a bug?
+      <a href="https://chromewebstore.google.com/detail/my-little-plant/nmfppnlojcllbcokdpbcfaofhdbckoaa/reviews" target="_blank" rel="noopener noreferrer">Leave a review</a>
+    </p>
     <div class="actions"><button class="act wide" data-action="close-settings">← Back</button></div>`;
 }
 

@@ -255,6 +255,14 @@ body {
 .seg + .seg { border-left: 2px solid var(--line); }
 .seg.active { background: var(--green); color: #fff; }
 .seg:hover:not(.active) { background: #faf6ec; color: var(--ink); }
+/* Destructive action (Start over) - reads as a gentle warning, not alarm */
+.seg.danger { color: var(--health); }
+.seg.danger:hover { background: #fdeef0; color: var(--health); }
+
+/* Feedback line under the settings (link to the Chrome Web Store reviews) */
+.set-feedback { text-align: center; font-size: 13px; color: var(--muted); line-height: 1.4; margin: 2px 4px 12px; }
+.set-feedback a { color: var(--green-d); font-weight: 700; text-decoration: none; }
+.set-feedback a:hover { text-decoration: underline; }
 
 /* dev panel */
 .dev { margin-top: 12px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
