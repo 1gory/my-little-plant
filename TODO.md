@@ -8,6 +8,16 @@ Web Store (`nmfppnlojcllbcokdpbcfaofhdbckoaa`); ближайшая цель — 
 
 ## A. Полировка к патчу 1.0.1 (мелкое, до первых юзеров)
 
+- [x] **Кнопка «Leave a review» в настройках** — ✅ сделано: строка-футер
+      «Got an idea to improve this or found a bug? Leave a review» со ссылкой на
+      `…/reviews` (паттерн как в youtube-milliseconds / motivation-counter).
+- [x] **Кнопка «Start over» в настройках** — ✅ сделано: ряд «Start over → New
+      plant», переиспользует `defaultState()` (как «Plant again» на финале), но с
+      `confirm()` — возвращает к выбору семечки в любой момент.
+- [x] **Перевод всех комментариев кода на английский** — ✅ сделано: `src/*.js`,
+      `styles.css`, `styleguide.html`, `tools/*.sh`; UI-строки и так были EN.
+      Кириллица осталась только в рабочих `.md` (намеренно).
+
 - [ ] **Эмодзи в текстовых экранах.** Остались `🎉 / 🥀` (финал), `🌼` («Did you
       know?»), `🌱` (подзаголовок «Let's plant the seed», кнопка «Plant again»).
       На фоне пиксель-арта смотрятся инородно. Решить: убрать / заменить на
