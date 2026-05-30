@@ -24,6 +24,12 @@ function glyph(name) {
   return `<img class="tglyph" src="icons/ui/${name}.png" alt="">`;
 }
 
+// App version — read straight from the manifest (single source of truth, no
+// duplication). Empty when opened outside the extension (e.g. popup.html directly).
+function appVersion() {
+  try { return chrome.runtime.getManifest().version; } catch { return ''; }
+}
+
 export function render(state, now = Date.now(), opts = {}) {
   if (opts.view === 'settings') return settingsScreen();
   switch (state.phase) {
@@ -31,6 +37,8 @@ export function render(state, now = Date.now(), opts = {}) {
       return chooseSeed();
     case 'choose-pot':
       return choosePot(state);
+    case 'intro':
+      return introScreen(state);
     case 'finished':
       return endScreen(state, true);
     case 'withered':
@@ -72,6 +80,26 @@ function choosePot(state) {
     <div class="grid">${cards}</div>`;
 }
 
+// Welcome / care screen shown after the pot is chosen, before the grow timer
+// starts. Sets gentle expectations: tend it lightly, and don't rush.
+function introScreen(state) {
+  const seed = getSeed(state.seedId);
+  const pot = getPot(state.potId);
+  return `
+    <header class="head"><h1>All set! ${glyph('sprout')}</h1>
+    <p class="sub">Your seed is tucked into the soil. A little care is all it asks:</p></header>
+    <div class="scene scene-intro">${plantSVG({ growth: 0, seed, pot })}</div>
+    <div class="facts intro-tips">
+      <ul>
+        <li>Water it when the soil looks dry — but go easy, soggy roots can rot.</li>
+        <li>Snip dried leaves, and repot when the roots get cramped.</li>
+        <li>Weather changes how fast it drinks and grows — peek at the forecast.</li>
+      </ul>
+      <p class="intro-patience">It grows in <strong>real time</strong> over a few weeks — no rushing, no hovering. Check in a little each day, be patient, and your plant will be happy. Good things take time ${glyph('sprout')}</p>
+    </div>
+    <div class="actions"><button class="act highlight wide" data-action="begin"><span>Let's grow it</span></button></div>`;
+}
+
 // Stat row as in the concept: icon on the left, label above the bar.
 function bar(icon, label, value, cls, showValue = true, note = '') {
   const v = Math.round(value);
@@ -104,6 +132,42 @@ function moisture(value) {
         </div>
       </div>
     </div>`;
+}
+
+// Plant status = the hint text + the mood icon in the badge. Declarative,
+// highest-priority-first: the first rule whose `when(state, ctx)` matches wins.
+// ctx = { w (weather), dryThreshold, rootBound, day }. Easy to read, reorder, extend.
+const STATUS_RULES = [
+  { mood: 'overwater', when: (s) => s.rot > 35,                    hint: 'Root rot! Stop watering — let the soil dry out, or repot into fresh soil' },
+  { mood: 'repot',     when: (s, c) => c.rootBound,                hint: 'Roots are cramped — time to repot into a deeper pot!' },
+  { mood: 'overwater', when: (s) => s.rot > 8,                     hint: 'Roots are rotting from too much water — let it dry out' },
+  { mood: 'overwater', when: (s) => s.water > OVERWATER_THRESHOLD, hint: 'The soil is waterlogged — ease off the watering' },
+  { mood: 'thirsty',   when: (s, c) => s.water < c.dryThreshold,   hint: 'The soil is dry — water your plant' },
+  { mood: 'unwell',    when: (s) => s.driedLeaves > 3,             hint: 'Too many dried leaves — trim them' },
+  { mood: 'unwell',    when: (s) => s.health < 40,                 hint: 'Your plant is feeling poorly — take care of it' },
+  { mood: 'happy',     when: (s) => s.growth < 4,                  hint: 'A sprout is on its way — be patient, it just needs a little time' },
+  { mood: 'thirsty',   when: (s, c) => c.w.id === 'hot',           hint: 'Heatwave — water drains faster than usual' },
+  { mood: 'cold',      when: (s, c) => c.w.temp === 'cold',        hint: 'It got cold, growth has slowed down' },
+  { mood: 'happy',     when: (s, c) => c.w.rain > 0,               hint: 'The rain waters it for you' },
+];
+
+// When nothing needs attention, vary the line by day so a healthy plant still
+// feels alive. Deterministic (stable within a day -> no flicker on re-render).
+const HEALTHY_FLAVORS = [
+  'Growing along nicely',
+  'Looking lush today',
+  'Happy and healthy',
+  'Reaching for the light',
+  'Thriving — keep it up',
+  'Soaking up the day',
+  'Quietly getting bigger',
+];
+
+function plantStatus(state, ctx) {
+  const rule = STATUS_RULES.find((r) => r.when(state, ctx));
+  if (rule) return { hint: rule.hint, mood: rule.mood };
+  const i = ((state.weatherSeed || 0) + (ctx.day || 0)) % HEALTHY_FLAVORS.length;
+  return { hint: HEALTHY_FLAVORS[i], mood: 'happy' };
 }
 
 function growing(state, now) {
@@ -140,20 +204,8 @@ function growing(state, now) {
       </div>`;
   }).join('');
 
-  // Hint + plant mood (the icon in the badge depends on the state).
-  // Order = priority: the most urgent / most actionable thing first.
-  const waterlogged = state.water > OVERWATER_THRESHOLD;
-  let hint = 'Growing along nicely', mood = 'happy';
-  if (state.rot > 35) { hint = 'Root rot! Stop watering — let the soil dry out, or repot into fresh soil'; mood = 'overwater'; }
-  else if (rootBound) { hint = 'Roots are cramped — time to repot into a deeper pot!'; mood = 'repot'; }
-  else if (state.rot > 8) { hint = 'Roots are rotting from too much water — let it dry out'; mood = 'overwater'; }
-  else if (waterlogged) { hint = 'The soil is waterlogged — ease off the watering'; mood = 'overwater'; }
-  else if (state.water < dryThreshold) { hint = 'The soil is dry — water your plant'; mood = 'thirsty'; }
-  else if (state.driedLeaves > 3) { hint = 'Too many dried leaves — trim them'; mood = 'unwell'; }
-  else if (state.health < 40) { hint = 'Your plant is feeling poorly — take care of it'; mood = 'unwell'; }
-  else if (w.id === 'hot') { hint = 'Heatwave — water drains faster than usual'; mood = 'thirsty'; }
-  else if (w.temp === 'cold') { hint = 'It got cold, growth has slowed down'; mood = 'cold'; }
-  else if (w.rain > 0) { hint = 'The rain waters it for you'; mood = 'happy'; }
+  // Hint + plant mood — picked from a priority table (see plantStatus / STATUS_RULES).
+  const { hint, mood } = plantStatus(state, { w, dryThreshold, rootBound, day });
 
   const canRepot = rootBound && state.potTier < POT_TIERS.length - 1;
 
@@ -247,7 +299,8 @@ function settingsScreen() {
       Got an idea to improve this or found a bug?
       <a href="https://chromewebstore.google.com/detail/my-little-plant/nmfppnlojcllbcokdpbcfaofhdbckoaa/reviews" target="_blank" rel="noopener noreferrer">Leave a review</a>
     </p>
-    <div class="actions"><button class="act wide" data-action="close-settings">← Back</button></div>`;
+    <div class="actions"><button class="act wide" data-action="close-settings">← Back</button></div>
+    ${appVersion() ? `<p class="set-version">My Little Plant · v${appVersion()}</p>` : ''}`;
 }
 
 export function devFrozen() {

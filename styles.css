@@ -280,6 +280,17 @@ body {
 .set-feedback a { color: var(--green-d); font-weight: 700; text-decoration: none; }
 .set-feedback a:hover { text-decoration: underline; }
 
+/* Intro / welcome screen (after pot pick, before the timer starts) */
+.scene-intro { border-width: 8px 8px 24px 8px; }
+.scene-intro .plant-svg { height: 116px; width: 116px; transform: translateY(14px); }
+.intro-tips { margin: 4px 0 8px; }
+.intro-tips ul { margin: 0 0 6px; padding-left: 18px; }
+.intro-tips li { margin: 4px 0; line-height: 1.35; font-size: 13px; }
+.intro-patience { margin: 0; color: var(--green-d); font-weight: 700; line-height: 1.4; font-size: 13px; }
+
+/* App version line at the bottom of Settings (from the manifest) */
+.set-version { text-align: center; font-size: 11px; color: var(--muted); opacity: .75; margin: 10px 0 2px; letter-spacing: .3px; }
+
 /* dev panel */
 .dev { margin-top: 12px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
 .dev button {

@@ -57,6 +57,12 @@ root.addEventListener('click', async (e) => {
     case 'pick-pot':
       await update((s) => {
         s.potId = btn.dataset.id;
+        s.phase = 'intro'; // welcome / care screen — the grow timer starts on 'begin'
+      });
+      break;
+
+    case 'begin':
+      await update((s) => {
         s.phase = 'growing';
         const now = Date.now();
         s.startedAt = now;

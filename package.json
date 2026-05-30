@@ -1,6 +1,6 @@
 {
   "name": "my-little-plant",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A cozy month-long plant-growing tamagotchi that lives in a browser popup.",
   "type": "module",
   "author": "Igor Pershin <igor.pershin.me@gmail.com>",

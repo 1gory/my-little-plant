@@ -80,7 +80,7 @@ by watering, trimming, and repotting it.
 - No host permissions
 - No content scripts
 - No background service worker
-- No external network requests of any kind
+- No external network reque sts of any kind
 
 Remote code: No. Data collection: No.
 

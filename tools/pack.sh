@@ -57,9 +57,16 @@ if [ "$(unzip -p "$OUT" src/config.js | grep -c 'DEV = false' || true)" -eq 0 ];
 fi
 
 n=$(unzip -l "$OUT" | tail -1 | awk '{print $2}')
-if [ "$problems" -eq 0 ]; then
-  echo "[OK] $OUT — $n files. DEV=false, no _raw/reserved/docs, font+weather+icon present."
-else
+if [ "$problems" -ne 0 ]; then
   echo "Packed WITH PROBLEMS — inspect above and re-pack." >&2
   exit 1
+fi
+echo "[OK] $OUT — $n files, $(du -h "$OUT" | cut -f1). DEV=false, no _raw/reserved/docs, font+weather+icon present."
+
+# --- Size watch: flag files >50KB so something super-heavy can't sneak in ---
+# (Pixel-art PNGs rarely need >50KB; an overscaled asset or unsubset font shows here.)
+FAT=$(printf '%s\n' "$LIST" | awk '$4 ~ /\.[a-z0-9]+$/ && ($1+0) > 51200 { printf "      %4dKB  %s\n", $1/1024, $4 }')
+if [ -n "$FAT" ]; then
+  echo "  [size] files >50KB — consider shrinking (pngquant / resize / font subset):"
+  printf '%s\n' "$FAT"
 fi
