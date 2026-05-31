@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "My Little Plant",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Grow your own plant in a browser popup: pick a seed, water it, watch the weather. A cozy month-long tamagotchi.",
   "author": "Igor Pershin <igor.pershin.me@gmail.com>",
   "homepage_url": "https://github.com/1gory/my-little-plant",

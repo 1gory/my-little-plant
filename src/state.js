@@ -28,7 +28,7 @@ export async function loadState() {
 
 // Brings saved state (possibly old/incomplete) up to the current shape
 // WITHOUT losing player progress. This is the main safeguard on updates.
-function hydrate(stored) {
+export function hydrate(stored) {
   if (!stored || typeof stored !== 'object') return defaultState();
   // 1) Merge in defaults: any NEW fields from future versions appear with their
   //    default value, while the player's real values override them.
@@ -42,7 +42,7 @@ function hydrate(stored) {
 // Version-based migration chain. Each step brings an old version's shape to the next.
 // Future example (if you rename the field water -> moisture):
 //   if (s.version < 2) { s.moisture = s.water ?? 50; delete s.water; s.version = 2; }
-function migrate(s) {
+export function migrate(s) {
   return s;
 }
 
@@ -63,6 +63,8 @@ export function defaultState() {
     potTier: 0,
     startedAt: null,
     lastTick: null,
+    finishedAt: null, // set when phase becomes 'finished' (advance/gameDay reference it)
+    witheredAt: null, // set when phase becomes 'withered'
     growth: 0,
     water: 50,   // start at the center of the moisture scale (marker centered), not in the overflow zone
     health: 100,

@@ -115,9 +115,20 @@ export function advance(state, now = Date.now(), frozen = false) {
   // the plant reaches 100% in exactly seed.growthDays real days.
   const baseGrowthPerHour = 100 / ((seed.growthDays || 30) * 24);
 
-  let elapsedHours = Math.floor((now - s.lastTick) / HOUR);
-  if (elapsedHours <= 0) return s;
-  elapsedHours = Math.min(elapsedHours, MAX_CATCHUP_HOURS);
+  // Clock-skew guard: if the wall clock jumped BACKWARD (NTP correction, DST,
+  // manual clock change, travel across time zones), `now` can be earlier than
+  // the stored lastTick. Without this, elapsedHours would be <= 0 and we'd
+  // return early WITHOUT re-anchoring, so the sim "freezes" on every popup open
+  // until real time catches back up to the stale future lastTick. Re-anchor
+  // lastTick to the present and bail out for this pass so the sim resumes from now.
+  if (now < s.lastTick) {
+    s.lastTick = now;
+    return s;
+  }
+
+  const rawElapsedHours = Math.floor((now - s.lastTick) / HOUR);
+  if (rawElapsedHours <= 0) return s;
+  const elapsedHours = Math.min(rawElapsedHours, MAX_CATCHUP_HOURS);
 
   for (let i = 0; i < elapsedHours; i++) {
     const hourIndex = Math.floor((s.lastTick - s.startedAt) / HOUR);
@@ -135,6 +146,14 @@ export function advance(state, now = Date.now(), frozen = false) {
       s.witheredAt = s.lastTick;
       break;
     }
+  }
+
+  // If the real gap exceeded the catch-up cap and the plant is still growing,
+  // burn the un-simulated excess so it isn't re-simulated on the next open.
+  // (MAX_CATCHUP_HOURS currently exceeds every plant's lifetime, so this can't
+  // trigger mid-game today; it keeps the sim correct if the balance changes.)
+  if (rawElapsedHours > MAX_CATCHUP_HOURS && s.phase === 'growing') {
+    s.lastTick = now;
   }
   return s;
 }
